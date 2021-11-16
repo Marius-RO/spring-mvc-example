@@ -1,6 +1,7 @@
 package com.company.config;
 
 import com.company.controller.AccountController;
+import com.company.controller.CategoryController;
 import com.company.controller.RootController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -41,9 +42,13 @@ public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
+                // Account controller
                 .authorizeRequests().antMatchers(AccountController.Security.PERMIT_ALL).permitAll()
                 .and()
                 .authorizeRequests().antMatchers(RootController.Security.PERMIT_ALL).permitAll()
+                .and()
+                // CategoryController
+                .authorizeRequests().antMatchers(CategoryController.Security.PERMIT_ONLY_ADMIN).hasAuthority(Roles.ROLE_ADMIN)
                 .and()
                 .authorizeRequests().anyRequest().authenticated()
                 .and()

@@ -1,6 +1,7 @@
 package com.company.config;
 
 import com.company.repository.impl.AccountRepositoryImpl;
+import com.company.util.GlobalCategoriesInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
@@ -11,7 +12,9 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
@@ -30,10 +33,12 @@ import java.util.Objects;
 public class WebAppMvcConfig implements WebMvcConfigurer {
 
     private final Environment environment;
+    private final WebApplicationContext webApplicationContext;
 
     @Autowired
-    public WebAppMvcConfig(Environment environment) {
+    public WebAppMvcConfig(Environment environment, WebApplicationContext webApplicationContext) {
         this.environment = environment;
+        this.webApplicationContext = webApplicationContext;
     }
 
     @Bean(name = "viewResolver")
@@ -91,5 +96,10 @@ public class WebAppMvcConfig implements WebMvcConfigurer {
     @Bean(name = "timestamp ")
     public Timestamp getCurrentTimestamp(){
         return new Timestamp(System.currentTimeMillis());
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(webApplicationContext.getBean(GlobalCategoriesInterceptor.class));
     }
 }
