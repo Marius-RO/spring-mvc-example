@@ -16,9 +16,11 @@ import javax.sql.DataSource;
 @EnableWebSecurity(debug = false)
 public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_CUSTOMER = "ROLE_CUSTOMER";
-    public static final String ROLE_EMPLOYEE = "ROLE_EMPLOYEE";
+    public interface Roles {
+        String ROLE_ADMIN = "ROLE_ADMIN";
+        String ROLE_CUSTOMER = "ROLE_CUSTOMER";
+        String ROLE_EMPLOYEE = "ROLE_EMPLOYEE";
+    }
 
     private final DataSource dataSource;
 

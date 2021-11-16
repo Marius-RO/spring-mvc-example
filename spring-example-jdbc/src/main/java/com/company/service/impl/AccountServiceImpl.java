@@ -41,8 +41,8 @@ public class AccountServiceImpl extends AbstractService implements AccountServic
         accountRepository.insertUser(
                 userAccount,
                 registerDto.isEmployeeCheck() ?
-                        WebAppSecurityConfig.ROLE_EMPLOYEE :
-                        WebAppSecurityConfig.ROLE_CUSTOMER
+                        WebAppSecurityConfig.Roles.ROLE_EMPLOYEE :
+                        WebAppSecurityConfig.Roles.ROLE_CUSTOMER
         );
     }
 

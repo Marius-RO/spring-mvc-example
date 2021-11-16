@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.validation.Valid;
 
@@ -33,13 +34,18 @@ public class AccountController extends AbstractController {
     }
 
     public interface Security {
-        String[] PERMIT_ALL = {PathHandler.FULL_LOGIN_URL, PathHandler.FULL_REGISTER_URL, PathHandler.FULL_PROCESS_REGISTER_URL};
+        String[] PERMIT_ALL = {
+                PathHandler.FULL_LOGIN_URL,
+                PathHandler.FULL_REGISTER_URL,
+                PathHandler.FULL_PROCESS_REGISTER_URL
+        };
     }
 
     private final AccountService accountService;
 
     @Autowired
-    public AccountController(AccountService accountService) {
+    public AccountController(WebApplicationContext webApplicationContext, AccountService accountService) {
+        super(webApplicationContext);
         this.accountService = accountService;
     }
 

@@ -1,12 +1,14 @@
 package com.company.controller;
 
 import com.company.controller.util.AbstractController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.WebApplicationContext;
 
 @Controller
-@RequestMapping(path = "/")
+@RequestMapping(path = RootController.PathHandler.BASE_URL)
 public class RootController extends AbstractController {
 
     public interface ViewHandler {
@@ -23,7 +25,15 @@ public class RootController extends AbstractController {
     }
 
     public interface Security {
-        String[] PERMIT_ALL = {PathHandler.FULL_HOME_URL, PathHandler.FULL_ACCESS_DENIED_URL};
+        String[] PERMIT_ALL = {
+                PathHandler.FULL_HOME_URL,
+                PathHandler.FULL_ACCESS_DENIED_URL
+        };
+    }
+
+    @Autowired
+    public RootController(WebApplicationContext webApplicationContext) {
+        super(webApplicationContext);
     }
 
     @Override

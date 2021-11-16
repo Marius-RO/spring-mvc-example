@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -22,8 +23,9 @@ public class AccountRepositoryImpl extends AbstractRepository implements Account
     private final JdbcUserDetailsManager jdbcUserDetailsManager;
 
     @Autowired
-    public AccountRepositoryImpl(JdbcTemplate jdbcTemplate, JdbcUserDetailsManager jdbcUserDetailsManager) {
-        super(jdbcTemplate);
+    public AccountRepositoryImpl(WebApplicationContext webApplicationContext, JdbcTemplate jdbcTemplate,
+                                 JdbcUserDetailsManager jdbcUserDetailsManager) {
+        super(webApplicationContext, jdbcTemplate);
         this.jdbcUserDetailsManager = jdbcUserDetailsManager;
     }
 
