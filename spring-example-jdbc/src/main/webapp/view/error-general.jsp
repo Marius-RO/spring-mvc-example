@@ -1,18 +1,15 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
     <head>
-        <title>Home</title>
+        <title>Oops, an error occurred</title>
         <jsp:include page="templates/head-footer-dependencies.jsp"/>
     </head>
 
     <body class="d-flex flex-column min-vh-100">
-
         <jsp:include page="templates/navbar.jsp"/>
 
-        <h2>My index page</h2>
+        <h1>Oops, an error occurred</h1>
 
         <jsp:include page="templates/footer.jsp"/>
-
     </body>
 </html>

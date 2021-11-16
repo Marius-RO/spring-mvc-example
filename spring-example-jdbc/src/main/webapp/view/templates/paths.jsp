@@ -2,8 +2,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%-- -------------------------------------------------
+                   RootController
+     ------------------------------------------------- --%>
+<c:url var="rootControllerHomePageLink" value="/index"/>
+
+<%-- -------------------------------------------------
                    AccountController
      ------------------------------------------------- --%>
+<c:url var="accountControllerLoginLink" value="/account/login"/>
 <c:url var="accountControllerRegisterLink" value="/account/register"/>
 <c:url var="accountControllerProcessRegisterLink" value="/account/process-register"/>
 

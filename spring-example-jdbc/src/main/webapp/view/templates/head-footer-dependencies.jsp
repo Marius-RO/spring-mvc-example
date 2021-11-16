@@ -78,6 +78,10 @@
         margin-bottom: 30px;
     }
 
+    .custom-logout-form {
+        margin-bottom: 0px;
+    }
+
     .custom-up-spacer {
         margin-top: 30px;
     }

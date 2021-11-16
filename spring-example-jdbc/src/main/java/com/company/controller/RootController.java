@@ -13,7 +13,7 @@ public class RootController extends AbstractController {
 
     public interface ViewHandler {
         String HOME = "index";
-        String ACCESS_DENIED = "access-denied";
+        String ACCESS_DENIED = "error-access-denied";
     }
 
     public interface PathHandler {

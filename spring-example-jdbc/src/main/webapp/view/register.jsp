@@ -1,21 +1,26 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" isELIgnored="false" %>
-<%@include file="templates/paths.jsp" %>
+<%@ include file="templates/paths.jsp" %>
+<%@ include file="templates/roles.jsp" %>
+
 <html>
     <head>
         <title>Register</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <jsp:include page="templates/head-footer-dependencies.jsp"/>
     </head>
 
-    <body>
+    <body class="d-flex flex-column min-vh-100">
+
+        <jsp:include page="templates/navbar.jsp"/>
 
         <div class="d-flex justify-content-center">
             <div class="w-25 p-3">
 
                 <div class="d-flex flex-column">
 
-                    <!-- Link param messages -->
+                    <!-- START custom messages -->
 
                     <c:if test="${param.error != null}">
                         <div class="p-2">
@@ -25,11 +30,13 @@
                         </div>
                     </c:if>
 
+                    <!-- END custom messages -->
+
                     <div class="p-2">
                         <h4 class="text-center">Register a new account</h4>
                     </div>
 
-                    <!-- Register form -->
+                    <!-- START register form -->
 
                     <div class="p-2">
 
@@ -58,18 +65,20 @@
                             <br/>
 
                             <div class="form-group">
-                                <form:checkbox path="termsCheck" class="form-check-input" id="idTermsCheck"/>
-                                <label class="form-check-label" for="idTermsCheck">I agree with <a href="#" onclick="openTermsModal()">terms and conditions</a></label>
+                                &nbsp;&nbsp;&nbsp;&nbsp; <form:checkbox path="termsCheck" class="form-check-input" id="idTermsCheck"/>
+                                <label class="form-check-label" for="idTermsCheck"> &nbsp; I agree with <a href="#" onclick="openTermsModal()">terms and conditions</a></label>
                                 <br/>
                                 <form:errors path="termsCheck" cssClass="text-danger"/>
                             </div>
 
                             <br/>
 
-                            <div class="form-group">
-                                <form:checkbox path="employeeCheck" class="form-check-input" id="idEmployeeCheck"/>
-                                <label class="form-check-label" for="idEmployeeCheck">Is an employee account</label>
-                            </div>
+                            <sec:authorize access="isAuthenticated() && hasAuthority('<%roleAdmin%>')">
+                                <div class="form-group">
+                                    <form:checkbox path="employeeCheck" class="form-check-input" id="idEmployeeCheck"/>
+                                    <label class="form-check-label" for="idEmployeeCheck">Is an employee account</label>
+                                </div>
+                            </sec:authorize>
 
                             <br/>
 
@@ -81,11 +90,13 @@
 
                     </div>
 
+                    <!-- END register form -->
+
                 </div>
             </div>
         </div>
 
-        <!-- Modal -->
+        <!-- START terms modal -->
         <div class="modal fade" id="idTermsModal" tabindex="-1" role="dialog" aria-labelledby="titleTermsModal" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -114,8 +125,11 @@
             </div>
         </div>
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+        <!-- END terms modal -->
+
+        <jsp:include page="templates/footer.jsp"/>
+
+        <!-- START terms modal script -->
         <script type="text/javascript">
             function openTermsModal(){
                 $('#idTermsModal').modal('show')
@@ -125,6 +139,8 @@
                 $('#idTermsModal').modal('hide')
             }
         </script>
+
+        <!-- END terms modal script -->
     </body>
 
 </html>

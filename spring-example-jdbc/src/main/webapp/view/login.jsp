@@ -6,17 +6,19 @@
 
     <head>
         <title>Login</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <jsp:include page="templates/head-footer-dependencies.jsp"/>
     </head>
 
-    <body>
+    <body class="d-flex flex-column min-vh-100">
+
+        <jsp:include page="templates/navbar.jsp"/>
 
         <div class="d-flex justify-content-center">
             <div class="w-25 p-3">
 
                 <div class="d-flex flex-column">
 
-                    <!-- Link param messages -->
+                    <!-- START Custom messages -->
                     <c:if test="${param.error != null}">
                         <div class="p-2">
                             <div class="alert alert-danger" role="alert">
@@ -28,7 +30,7 @@
                     <c:if test="${param.logout != null}">
                         <div class="p-2">
                             <div class="alert alert-success" role="alert">
-                                You are logout
+                                Logout successfully
                             </div>
                         </div>
                     </c:if>
@@ -41,11 +43,13 @@
                         </div>
                     </c:if>
 
+                    <!-- END Custom messages -->
+
                     <div class="p-2">
                         <h4 class="text-center">Login into your account</h4>
                     </div>
 
-                    <!-- Login form -->
+                    <!-- START Login form -->
 
                     <div class="p-2">
 
@@ -73,6 +77,8 @@
 
                     </div>
 
+                    <!-- END Login form -->
+
                     <div class="p-2">
                         <div class="text-center">
                                 <h6>
@@ -85,7 +91,8 @@
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+        <jsp:include page="templates/footer.jsp"/>
+
     </body>
 
 </html>
