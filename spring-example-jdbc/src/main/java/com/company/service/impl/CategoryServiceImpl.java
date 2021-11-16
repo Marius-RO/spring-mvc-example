@@ -10,16 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class CategoryServiceImpl extends AbstractService implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-
-    // Used to store all categories in order to create the drop-down menu from header. This will be used in order to
-    // avoid requesting categories from everytime from the DB.
-    private final CopyOnWriteArrayList<Category> globalCategoriesList = new CopyOnWriteArrayList<>();
 
     @Autowired
     public CategoryServiceImpl(WebApplicationContext webApplicationContext, CategoryRepository categoryRepository) {

@@ -25,3 +25,13 @@
 <c:set var="dynamic_categoryControllerUpdateCategoryLink" value="/categories/update" scope="application"/>
 <c:set var="dynamic_categoryControllerProcessUpdateCategoryLink" value="/categories/process-update" scope="application"/>
 <c:set var="dynamic_categoryControllerProcessDeleteCategoryLink" value="/categories/process-delete" scope="application"/>
+
+
+<%-- -------------------------------------------------
+                   EmployeeController
+     ------------------------------------------------- --%>
+<c:url var="employeeControllerGetEmployeesLink" value="/employees/all"/>
+
+<%-- dinamyc links --%>
+<c:set var="dynamic_employeeControllerSeeActivityLink" value="/employees/activity" scope="application"/>
+<c:set var="dynamic_employeeControllerProcessDeleteEmployeeLink" value="/employees/process-delete" scope="application"/>

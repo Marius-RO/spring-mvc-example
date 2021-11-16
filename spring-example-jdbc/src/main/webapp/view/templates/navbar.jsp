@@ -64,8 +64,8 @@
                                 <a class="dropdown-item" href="#">Profile</a>
                                 <a class="dropdown-item" href="#">Orders</a>
 
-                                <sec:authorize access="hasAuthority('<%roleAdmin%>')">
-                                    <a class="dropdown-item" href="#">Employees</a>
+                                <sec:authorize access="hasAuthority('${roleAdmin}')">
+                                    <a class="dropdown-item" href="${employeeControllerGetEmployeesLink}">Employees</a>
                                     <a class="dropdown-item" href="${categoryControllerGetCategoriesLink}">Categories</a>
                                 </sec:authorize>
 
@@ -76,7 +76,7 @@
                         </li>
                     </sec:authorize>
 
-                    <sec:authorize access="isAuthenticated() && hasAuthority('<%roleCustomer%>')">
+                    <sec:authorize access="isAuthenticated() && hasAuthority('${roleCustomer}')">
                         <li class="nav-item px-3">
                             <button type="button" class="icon-button">
                                 <span class="material-icons">shopping_cart</span>

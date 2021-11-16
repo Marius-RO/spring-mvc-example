@@ -6,6 +6,7 @@ import com.company.service.AccountService;
 import com.company.util.GeneralUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,12 +66,18 @@ public class AccountController extends AbstractController {
     }
 
     @RequestMapping(path = PathHandler.PROCESS_REGISTER_URL, method = RequestMethod.POST)
-    public String registerUser(@Valid @ModelAttribute("registerDto") RegisterDto registerDto, BindingResult bindingResult){
+    public String registerUser(@Valid @ModelAttribute("registerDto") RegisterDto registerDto, BindingResult bindingResult,
+                               Model model){
+
         if(bindingResult.hasErrors()){
             return ViewHandler.REGISTER;
         }
         accountService.registerUser(registerDto);
-        return GeneralUtilities.REDIRECT + ViewHandler.LOGIN + "?successRegister";
+        
+        model.addAttribute("attributeSuccessRegister", Boolean.TRUE);
+        return registerDto.isEmployeeCheck() ?
+            GeneralUtilities.REDIRECT + EmployeeController.PathHandler.FULL_EMPLOYEES_URL :
+            GeneralUtilities.REDIRECT + PathHandler.FULL_LOGIN_URL;
     }
 
 }

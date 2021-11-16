@@ -16,11 +16,11 @@ import java.util.List;
 @Repository
 public class CategoryRepositoryImpl extends AbstractRepository implements CategoryRepository {
 
-    public static final String DEF_EXTRACT_ALL_CATEGORIES_SQL = "SELECT * FROM categories";
-    public static final String DEF_INSERT_CATEGORY_SQL = "INSERT INTO categories (name) VALUES (?)";
-    public static final String DEF_GET_CATEGORY_BY_ID_SQL = "SELECT * FROM categories WHERE id = ?";
-    public static final String DEF_UPDATE_CATEGORY_BY_ID_SQL = "UPDATE categories SET name = ? WHERE id = ?";
-    public static final String DEF_DELETE_CATEGORY_BY_ID_SQL = "DELETE FROM categories WHERE id = ?";
+    private static final String DEF_EXTRACT_ALL_CATEGORIES_SQL = "SELECT * FROM categories";
+    private static final String DEF_INSERT_CATEGORY_SQL = "INSERT INTO categories (name) VALUES (?)";
+    private static final String DEF_GET_CATEGORY_BY_ID_SQL = "SELECT * FROM categories WHERE id = ?";
+    private static final String DEF_UPDATE_CATEGORY_BY_ID_SQL = "UPDATE categories SET name = ? WHERE id = ?";
+    private static final String DEF_DELETE_CATEGORY_BY_ID_SQL = "DELETE FROM categories WHERE id = ?";
 
     @Autowired
     public CategoryRepositoryImpl(WebApplicationContext webApplicationContext, JdbcTemplate jdbcTemplate) {

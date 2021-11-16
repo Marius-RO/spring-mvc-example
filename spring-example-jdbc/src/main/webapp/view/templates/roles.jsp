@@ -1,10 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.company.config.WebAppSecurityConfig" %>
 
 <%-- Roles --%>
-<%
-    final String roleCustomer = WebAppSecurityConfig.Roles.ROLE_CUSTOMER;
-    final String roleEmployee =  WebAppSecurityConfig.Roles.ROLE_EMPLOYEE;
-    final String roleAdmin =  WebAppSecurityConfig.Roles.ROLE_ADMIN;
-%>
+<c:set var="roleCustomer" value="ROLE_CUSTOMER" scope="application"/>
+<c:set var="roleEmployee" value="ROLE_EMPLOYEE" scope="application"/>
+<c:set var="roleAdmin" value="ROLE_ADMIN" scope="application"/>

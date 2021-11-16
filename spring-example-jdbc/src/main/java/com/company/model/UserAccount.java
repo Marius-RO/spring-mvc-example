@@ -9,7 +9,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 @Getter
@@ -18,8 +17,6 @@ import java.sql.Timestamp;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class UserAccount {
-
-    private int id;
 
     @Value(value = "${com.company.model.userAccount.enabled}")
     private boolean enabled;

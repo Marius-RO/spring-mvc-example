@@ -73,14 +73,14 @@
 
                             <br/>
 
-                            <sec:authorize access="isAuthenticated() && hasAuthority('<%roleAdmin%>')">
+                            <sec:authorize access="isAuthenticated() && hasAuthority('${roleAdmin}')">
                                 <div class="form-group">
-                                    <form:checkbox path="employeeCheck" class="form-check-input" id="idEmployeeCheck"/>
-                                    <label class="form-check-label" for="idEmployeeCheck">Is an employee account</label>
+                                    &nbsp;&nbsp;&nbsp;&nbsp; <form:checkbox path="employeeCheck" class="form-check-input" id="idEmployeeCheck"/>
+                                    <label class="form-check-label" for="idEmployeeCheck"> &nbsp; Is an employee account</label>
                                 </div>
-                            </sec:authorize>
 
-                            <br/>
+                                <br/>
+                            </sec:authorize>
 
                             <div class="text-center">
                                 <button type="submit" class="h-25 w-100 btn btn-primary">Register</button>

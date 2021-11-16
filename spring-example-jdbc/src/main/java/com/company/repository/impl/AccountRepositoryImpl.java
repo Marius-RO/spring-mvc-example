@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class AccountRepositoryImpl extends AbstractRepository implements AccountRepository {
 
     public static final String DEF_CREATE_USER_SQL = "INSERT INTO users (username, password, enabled, added) VALUES (?, ?, ?, ?)";
-    public static final String DEF_CREATE_USER_ROLE_SQL = "INSERT INTO authorities (username, authority) VALUES (?, ?)";
+    private static final String DEF_CREATE_USER_ROLE_SQL = "INSERT INTO authorities (username, authority) VALUES (?, ?)";
 
     private final JdbcUserDetailsManager jdbcUserDetailsManager;
 

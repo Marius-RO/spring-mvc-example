@@ -2,6 +2,7 @@ package com.company.config;
 
 import com.company.controller.AccountController;
 import com.company.controller.CategoryController;
+import com.company.controller.EmployeeController;
 import com.company.controller.RootController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +50,9 @@ public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 // CategoryController
                 .authorizeRequests().antMatchers(CategoryController.Security.PERMIT_ONLY_ADMIN).hasAuthority(Roles.ROLE_ADMIN)
+                .and()
+                // EmployeeController
+                .authorizeRequests().antMatchers(EmployeeController.Security.PERMIT_ONLY_ADMIN).hasAuthority(Roles.ROLE_ADMIN)
                 .and()
                 .authorizeRequests().anyRequest().authenticated()
                 .and()

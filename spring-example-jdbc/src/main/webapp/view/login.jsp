@@ -35,7 +35,7 @@
                         </div>
                     </c:if>
 
-                    <c:if test="${param.successRegister != null}">
+                    <c:if test="${param.attributeSuccessRegister != null}">
                         <div class="p-2">
                             <div class="alert alert-success" role="alert">
                                 Register successfully
