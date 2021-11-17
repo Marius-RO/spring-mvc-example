@@ -30,6 +30,14 @@
                         </div>
                     </c:if>
 
+                    <c:if test="${param.successDeletedAccount != null}">
+                        <div class="p-2">
+                            <div class="alert alert-success" role="alert">
+                                Your account was deleted
+                            </div>
+                        </div>
+                    </c:if>
+
                     <!-- END custom messages -->
 
                     <div class="p-2">
@@ -75,8 +83,10 @@
 
                             <sec:authorize access="isAuthenticated() && hasAuthority('${roleAdmin}')">
                                 <div class="form-group">
-                                    &nbsp;&nbsp;&nbsp;&nbsp; <form:checkbox path="employeeCheck" class="form-check-input" id="idEmployeeCheck"/>
+                                    &nbsp;&nbsp;&nbsp;&nbsp; <form:checkbox path="isEmployeeCheck" class="form-check-input" id="idEmployeeCheck" checked="true"/>
                                     <label class="form-check-label" for="idEmployeeCheck"> &nbsp; Is an employee account</label>
+                                    <br/>
+                                    <form:errors path="isEmployeeCheck" cssClass="text-danger"/>
                                 </div>
 
                                 <br/>

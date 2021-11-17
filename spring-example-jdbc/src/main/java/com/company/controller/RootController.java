@@ -18,9 +18,9 @@ public class RootController extends AbstractController {
 
     public interface PathHandler {
         String BASE_URL = "/";
-        String HOME_URL = "/index";
+        String HOME_URL = "index";
         String FULL_HOME_URL = BASE_URL + HOME_URL;
-        String ACCESS_DENIED_URL = "/access-denied";
+        String ACCESS_DENIED_URL = "access-denied";
         String FULL_ACCESS_DENIED_URL = BASE_URL + ACCESS_DENIED_URL;
     }
 

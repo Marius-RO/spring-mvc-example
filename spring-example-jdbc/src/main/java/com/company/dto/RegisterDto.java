@@ -1,6 +1,7 @@
 package com.company.dto;
 
 import com.company.validations.UniqueAccount;
+import com.company.validations.ValidEmployeeAddition;
 import com.company.validations.ValidPassword;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,5 +26,7 @@ public class RegisterDto {
 
     @AssertTrue(message = "{com.company.dto.registerDto.termsCheck.assertTrueConstraint.message}")
     private boolean termsCheck;
-    private boolean isEmployeeCheck;
+
+    @ValidEmployeeAddition
+    private Boolean isEmployeeCheck = Boolean.FALSE;
 }

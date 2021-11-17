@@ -46,6 +46,13 @@ public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
                 // Account controller
                 .authorizeRequests().antMatchers(AccountController.Security.PERMIT_ALL).permitAll()
                 .and()
+                .authorizeRequests().antMatchers(AccountController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE)
+                                        .hasAnyAuthority(Roles.ROLE_CUSTOMER, Roles.ROLE_EMPLOYEE)
+                .and()
+                .authorizeRequests().antMatchers(AccountController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE_ADMIN)
+                                    .hasAnyAuthority(Roles.ROLE_CUSTOMER, Roles.ROLE_EMPLOYEE, Roles.ROLE_ADMIN)
+                .and()
+                // Root controller
                 .authorizeRequests().antMatchers(RootController.Security.PERMIT_ALL).permitAll()
                 .and()
                 // CategoryController

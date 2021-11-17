@@ -1,12 +1,14 @@
 package com.company.service.impl;
 
 import com.company.config.WebAppSecurityConfig;
+import com.company.dto.ProfileDto;
 import com.company.dto.RegisterDto;
 import com.company.model.UserAccount;
 import com.company.repository.AccountRepository;
 import com.company.service.AccountService;
 import com.company.service.impl.util.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
@@ -40,7 +42,7 @@ public class AccountServiceImpl extends AbstractService implements AccountServic
         // add user
         accountRepository.insertUser(
                 userAccount,
-                registerDto.isEmployeeCheck() ?
+                registerDto.getIsEmployeeCheck() ?
                         WebAppSecurityConfig.Roles.ROLE_EMPLOYEE :
                         WebAppSecurityConfig.Roles.ROLE_CUSTOMER
         );
@@ -49,5 +51,33 @@ public class AccountServiceImpl extends AbstractService implements AccountServic
     @Override
     public boolean userExists(String email) {
         return accountRepository.userExists(email);
+    }
+
+    @Nullable
+    @Override
+    public UserAccount getUser(String email) {
+        return accountRepository.getUser(email);
+    }
+
+    @Override
+    public void updateUser(ProfileDto profileDto, String email) {
+        UserAccount userAccount = webApplicationContext.getBean(UserAccount.class);
+        userAccount.setEmail(email);
+        userAccount.setFirstName(profileDto.getFirstName());
+        userAccount.setLastName(profileDto.getLastName());
+        userAccount.getAddress().setFullAddress(profileDto.getAddressDto().getFullAddress());
+        userAccount.getAddress().setPhone(profileDto.getAddressDto().getPhone());
+
+        accountRepository.updateUser(userAccount);
+    }
+
+    @Override
+    public boolean tryToUpdatePassword(String oldPassword, String newPassword) {
+        return accountRepository.tryToUpdatePassword(oldPassword, newPassword);
+    }
+
+    @Override
+    public void deleteUser(String email) {
+        accountRepository.deleteUser(email);
     }
 }

@@ -12,7 +12,10 @@
 <c:url var="accountControllerLoginLink" value="/account/login"/>
 <c:url var="accountControllerRegisterLink" value="/account/register"/>
 <c:url var="accountControllerProcessRegisterLink" value="/account/process-register"/>
-
+<c:url var="accountControllerProfileLink" value="/account/profile"/>
+<c:url var="accountControllerProcessUpdateProfileLink" value="/account/process-update"/>
+<c:url var="accountControllerProcessUpdatePasswordLink" value="/account/process-update-password"/>
+<c:url var="accountControllerProcessDeleteAccountLink" value="/account/process-delete"/>
 
 <%-- -------------------------------------------------
                    CategoryController

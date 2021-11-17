@@ -61,7 +61,7 @@
                             </a>
 
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Profile</a>
+                                <a class="dropdown-item" href="${accountControllerProfileLink}">Profile</a>
                                 <a class="dropdown-item" href="#">Orders</a>
 
                                 <sec:authorize access="hasAuthority('${roleAdmin}')">
@@ -69,7 +69,8 @@
                                     <a class="dropdown-item" href="${categoryControllerGetCategoriesLink}">Categories</a>
                                 </sec:authorize>
 
-                                <form:form action="logout" method="post" cssClass="custom-logout-form">
+                                <c:url var="logoutLink" value="/logout"/>
+                                <form:form action="${logoutLink}" method="post" cssClass="custom-logout-form">
                                     <input class="dropdown-item" type="submit" value="Logout">
                                 </form:form>
                             </div>
