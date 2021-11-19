@@ -1,9 +1,6 @@
 package com.company.config;
 
-import com.company.controller.AccountController;
-import com.company.controller.CategoryController;
-import com.company.controller.EmployeeController;
-import com.company.controller.RootController;
+import com.company.controller.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -55,9 +52,24 @@ public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
                 // Root controller
                 .authorizeRequests().antMatchers(RootController.Security.PERMIT_ALL).permitAll()
                 .and()
+
                 // CategoryController
                 .authorizeRequests().antMatchers(CategoryController.Security.PERMIT_ONLY_ADMIN).hasAuthority(Roles.ROLE_ADMIN)
                 .and()
+
+                // ProductController
+                .authorizeRequests().antMatchers(ProductController.Security.PERMIT_ALL).permitAll()
+                .and()
+                .authorizeRequests().antMatchers(ProductController.Security.PERMIT_ONLY_EMPLOYEE_ADMIN).hasAnyAuthority(Roles.ROLE_EMPLOYEE, Roles.ROLE_ADMIN)
+                .and()
+                .authorizeRequests().antMatchers(ProductController.Security.PERMIT_ONLY_VISITOR_CUSTOMER).not().hasAnyAuthority(Roles.ROLE_EMPLOYEE, Roles.ROLE_ADMIN)
+                .and()
+
+
+                // OrderController
+                .authorizeRequests().antMatchers(OrderController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE_ADMIN).authenticated()
+                .and()
+
                 // EmployeeController
                 .authorizeRequests().antMatchers(EmployeeController.Security.PERMIT_ONLY_ADMIN).hasAuthority(Roles.ROLE_ADMIN)
                 .and()

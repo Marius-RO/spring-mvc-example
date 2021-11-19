@@ -31,7 +31,7 @@
         outline: none;
         border-radius: 50%;
         color: white;
-        background-color: #212529;
+        background-color: #353a40;
         margin-right: 10px;
     }
 
@@ -40,9 +40,14 @@
         color:#afafaf;
     }
 
+    .icon-button__badge:hover {
+        cursor: pointer;
+        background: #afafaf;
+    }
+
     .icon-button__badge {
         position: absolute;
-        top: 5px;
+        top: 2px;
         right: -20px;
         width: 25px;
         background: whitesmoke;
@@ -74,7 +79,7 @@
         padding-top: 10px;
     }
 
-    .custom-header{
+    .custom-header {
         margin-bottom: 30px;
     }
 

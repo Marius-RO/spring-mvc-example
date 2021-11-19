@@ -1,5 +1,7 @@
 package com.company.util;
 
+import java.text.DecimalFormat;
+
 /**
  * Utility class
  */
@@ -13,5 +15,9 @@ public final class GeneralUtilities {
 
     public static char[] trimCharArray(char[] array){
         return String.valueOf(array).trim().toCharArray();
+    }
+
+    public static double getDoubleFormatted(double value, String pattern){
+        return Double.parseDouble(new DecimalFormat(pattern).format(value));
     }
 }

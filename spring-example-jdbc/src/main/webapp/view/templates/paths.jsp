@@ -17,6 +17,7 @@
 <c:url var="accountControllerProcessUpdatePasswordLink" value="/account/process-update-password"/>
 <c:url var="accountControllerProcessDeleteAccountLink" value="/account/process-delete"/>
 
+
 <%-- -------------------------------------------------
                    CategoryController
      ------------------------------------------------- --%>
@@ -28,6 +29,33 @@
 <c:set var="dynamic_categoryControllerUpdateCategoryLink" value="/categories/update" scope="application"/>
 <c:set var="dynamic_categoryControllerProcessUpdateCategoryLink" value="/categories/process-update" scope="application"/>
 <c:set var="dynamic_categoryControllerProcessDeleteCategoryLink" value="/categories/process-delete" scope="application"/>
+
+
+<%-- -------------------------------------------------
+                   ProductController
+     ------------------------------------------------- --%>
+<c:url var="productControllerAddProductLink" value="/products/add"/>
+<c:url var="productControllerProcessAddProductLink" value="/products/process-add"/>
+<c:url var="productControllerGetCartPageLink" value="/products/cart"/>
+
+<%-- dinamyc links --%>
+<c:set var="dynamic_productControllerSeeProductDetailsLink" value="/products/details" scope="application"/>
+<c:set var="dynamic_productControllerGetUpdateProductLink" value="/products/update" scope="application"/>
+<c:set var="dynamic_productControllerProcessUpdateProductLink" value="/products/process-update" scope="application"/>
+<c:set var="dynamic_productControllerProcessDeleteProductLink" value="/products/process-delete" scope="application"/>
+<c:set var="dynamic_productControllerProcessDeleteFromCartLink" value="/products/delete-from-cart" scope="application"/>
+<c:set var="dynamic_productControllerProcessAddToCartLink" value="/products/add-to-cart" scope="application"/>
+<c:set var="dynamic_productControllerProcessUpdateCartQuantityLink" value="/products/update-cart-quantity" scope="application"/>
+
+
+<%-- -------------------------------------------------
+                   OrdersController
+     ------------------------------------------------- --%>
+<c:url var="orderControllerGetOrdersLink" value="/orders/all"/>
+<c:url var="orderControllerProcessSendOrderLink" value="/orders/process-send"/>
+
+
+
 
 
 <%-- -------------------------------------------------

@@ -29,12 +29,12 @@ public class EmployeeRepositoryImpl extends AbstractRepository implements Employ
 
     private static final String DEF_EXTRACT_ALL_EMPLOYEES_WITH_LAST_ACTIVITY_TIMESTAMP_SQL
             = "SELECT DISTINCT u.username, first_name, last_name, (" +
-                                                                    "SELECT modified_At " +
+                                                                    "SELECT added " +
                                                                     "FROM user_activities ua " +
                                                                     "WHERE ua.fk_username = u.username " +
-                                                                    "ORDER BY ua.modified_At DESC " +
+                                                                    "ORDER BY ua.added DESC " +
                                                                     "LIMIT 1 " +
-                                                                  ") AS modified_At " +
+                                                                  ") AS added " +
              "FROM users u JOIN authorities a ON (u.username = a.username) " +
              "WHERE a.authority = '" + WebAppSecurityConfig.Roles.ROLE_EMPLOYEE + "'";
 

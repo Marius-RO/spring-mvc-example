@@ -62,7 +62,12 @@
 
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="${accountControllerProfileLink}">Profile</a>
-                                <a class="dropdown-item" href="#">Orders</a>
+                                <a class="dropdown-item" href="${orderControllerGetOrdersLink}">Orders</a>
+
+                                <sec:authorize access="hasAnyAuthority('${roleAdmin}', '${roleEmployee}')">
+                                    <a class="dropdown-item" href="${productControllerAddProductLink}">Add product</a>
+                                </sec:authorize>
+
 
                                 <sec:authorize access="hasAuthority('${roleAdmin}')">
                                     <a class="dropdown-item" href="${employeeControllerGetEmployeesLink}">Employees</a>
@@ -77,12 +82,12 @@
                         </li>
                     </sec:authorize>
 
-                    <sec:authorize access="isAuthenticated() && hasAuthority('${roleCustomer}')">
+                    <sec:authorize access="!hasAnyAuthority('${roleEmployee}', '${roleAdmin}')">
                         <li class="nav-item px-3">
-                            <button type="button" class="icon-button">
-                                <span class="material-icons">shopping_cart</span>
-                                <span class="icon-button__badge">25</span>
-                            </button>
+                            <a class="btn icon-button" href="${productControllerGetCartPageLink}" role="button">
+                                <span class="material-icons" id = "idIconCart">shopping_cart</span>
+                                <span class="icon-button__badge" id="idCartBadge">${sessionScope.sessionCart == null ? 0 : sessionScope.sessionCart.cartSize()}</span>
+                            </a>
                         </li>
                     </sec:authorize>
 

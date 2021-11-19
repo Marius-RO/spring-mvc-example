@@ -13,6 +13,7 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -31,6 +32,9 @@ import java.util.Objects;
     }
 )
 public class WebAppMvcConfig implements WebMvcConfigurer {
+
+    private static final int MB_SIZE = 1024 * 1024;
+    public static final int MAX_UPLOAD_SIZE = 5 * MB_SIZE;
 
     private final Environment environment;
     private final WebApplicationContext webApplicationContext;
@@ -93,7 +97,7 @@ public class WebAppMvcConfig implements WebMvcConfigurer {
         return getLocalValidator();
     }
 
-    @Bean(name = "timestamp ")
+    @Bean(name = "timestamp")
     public Timestamp getCurrentTimestamp(){
         return new Timestamp(System.currentTimeMillis());
     }
@@ -101,5 +105,14 @@ public class WebAppMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(webApplicationContext.getBean(GlobalCategoriesInterceptor.class));
+    }
+
+    @Bean(name="multipartResolver")
+    public CommonsMultipartResolver getCommonMultipartResolver() {
+        //https://www.baeldung.com/spring-file-upload
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+        resolver.setDefaultEncoding("utf-8");
+        resolver.setMaxUploadSizePerFile(MAX_UPLOAD_SIZE);
+        return resolver;
     }
 }
