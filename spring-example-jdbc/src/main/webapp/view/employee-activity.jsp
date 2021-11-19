@@ -34,7 +34,51 @@
                         <td>${activity.added}</td>
                         <td>
                             <button type="button" class="btn-view-activity btn btn-primary"
-                                    onclick="openEmployeeActivityModal('${activity.before}', '${activity.after}')">View activity</button>
+                                    onclick="openEmployeeActivityModal(${activity.id})">View activity</button>
+
+                            <!-- START employee activity modal -->
+                            <div class="modal fade" id="idEmployeeActivityModal${activity.id}" tabindex="-1" role="dialog" aria-labelledby="titleEmployeeActivityModal${activity.id}" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="titleEmployeeActivityModal${activity.id}">Activity details (${activity.tag})</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeEmployeeActivityModal(${activity.id})">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+
+                                        <div class="modal-body">
+
+                                            <div class="container">
+                                                <div class="row">
+                                                    <div class="col">
+                                                            <h4>Before</h4><br/><br/>
+                                                            <pre id="idBeforeActivityModal${activity.id}">
+                                                                    ${activity.before}
+                                                            </pre>
+                                                            <br/><br/>
+                                                    </div>
+
+                                                    <div class="col">
+                                                            <h4>After</h4><br/><br/>
+
+                                                            <pre id="idAfterActivityModal${activity.id}">
+                                                                    ${activity.after}
+                                                            </pre>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeEmployeeActivityModal(${activity.id})">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- END employee activity modal -->
                         </td>
                     </tr>
                 </c:forEach>
@@ -44,40 +88,7 @@
 
         <!-- END employee activity table -->
 
-        <!-- START employee activity modal -->
-        <div class="modal fade" id="idEmployeeActivityModal" tabindex="-1" role="dialog" aria-labelledby="titleEmployeeActivityModal" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
 
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="titleEmployeeActivityModal">Activity details</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeEmployeeActivityModal()">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="container">
-                            <div class="row">
-                                <div id="idBeforeActivityModal" class="col-sm">
-
-                                </div>
-
-                                <div id="idAfterActivityModal" class="col-sm">
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeEmployeeActivityModal()">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- END employee activity modal -->
 
         <jsp:include page="templates/footer.jsp"/>
 
@@ -97,14 +108,23 @@
                 });
             });
 
-            function openEmployeeActivityModal(before, after){
-                document.getElementById("idBeforeActivityModal").textContent = before;
-                document.getElementById("idAfterActivityModal").textContent = after;
-                $('#idEmployeeActivityModal').modal('show')
+            function openEmployeeActivityModal(id){
+
+                let elemBefore = document.getElementById("idBeforeActivityModal" + id);
+                let beforeJsonValue = JSON.parse(elemBefore.textContent);
+                beforeJsonValue.imageBase64 = "";
+                elemBefore.textContent = JSON.stringify(beforeJsonValue, undefined, 2);
+
+                let elemAfter = document.getElementById("idAfterActivityModal" + id);
+                let afterJsonValue = JSON.parse(elemAfter.textContent);
+                afterJsonValue.imageBase64 = "";
+                elemAfter.textContent = JSON.stringify(afterJsonValue, undefined, 2);
+
+                $('#idEmployeeActivityModal' + id).modal('show')
             }
 
-            function closeEmployeeActivityModal(){
-                $('#idEmployeeActivityModal').modal('hide')
+            function closeEmployeeActivityModal(id){
+                $('#idEmployeeActivityModal' + id).modal('hide')
             }
 
         </script>
