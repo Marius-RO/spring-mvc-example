@@ -13,8 +13,10 @@ import java.math.BigDecimal;
 @ToString
 public class ProductDto {
 
+    public static final String MAX_PRODUCT_PRICE = "1000";
+
     @DecimalMin(value = "0.01", message = "{com.company.dto.productDto.price.decimalMinConstraint.message}")
-    @DecimalMax(value = "9999.99", message = "{com.company.dto.productDto.price.decimalMaxConstraint.message}")
+    @DecimalMax(value = "999.99", message = "{com.company.dto.productDto.price.decimalMaxConstraint.message}")
     @Digits(integer = 4, fraction = 2, message = "{com.company.dto.productDto.price.digitsConstraint.message}")
     private BigDecimal price = new BigDecimal("0.0");
 

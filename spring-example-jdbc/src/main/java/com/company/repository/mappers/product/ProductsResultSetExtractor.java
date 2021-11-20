@@ -36,6 +36,7 @@ public class ProductsResultSetExtractor extends AbstractMapper implements Result
             product.setName(resultSet.getString(4));
             product.setDescription(resultSet.getString(5));
             product.setImageBase64(resultSet.getString(6));
+            product.setAdded(resultSet.getTimestamp(7));
 
             products.add(product);
         }

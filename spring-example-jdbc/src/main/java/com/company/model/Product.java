@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
+
 @Getter
 @Setter
 @ToString
@@ -22,6 +24,7 @@ public class Product {
     private String name;
     private String description;
     private String imageBase64;
+    private Timestamp added;
 
     // not used in DB
     private boolean isAddedToCart;

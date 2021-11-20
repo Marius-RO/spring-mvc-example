@@ -30,6 +30,7 @@ public class ProductRowMapper extends AbstractMapper implements RowMapper<Produc
         product.setName(resultSet.getString(4));
         product.setDescription(resultSet.getString(5));
         product.setImageBase64(resultSet.getString(6));
+        product.setAdded(resultSet.getTimestamp(7));
         return product;
     }
 }

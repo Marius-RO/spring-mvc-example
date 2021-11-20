@@ -23,6 +23,13 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
 
     private final ProductRepository productRepository;
 
+    private interface SortingOptions {
+        int BY_PRICE_ASCENDING = 0;
+        int BY_PRICE_DESCENDING = 1;
+        int BY_DATE_ASCENDING = 2;
+        int BY_DATE_DESCENDING = 3;
+    }
+
     @Autowired
     public ProductServiceImpl(WebApplicationContext webApplicationContext, ProductRepository productRepository) {
         super(webApplicationContext);
@@ -55,6 +62,38 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
     }
 
     @Override
+    public List<Product> filterProducts(int categoryId, String searchValue, float maxPrice, int sortOption) {
+         /*
+         Priority for filter/sorting is as following:
+            1. filter after category id
+            2. filter after search value
+            3. filter after price range
+            4. sort after price/date
+          */
+
+        searchValue = searchValue.trim();
+        switch (sortOption) {
+            case SortingOptions.BY_DATE_ASCENDING:
+                return categoryId > 0 ?
+                        productRepository.filterProductsAndSortByDateAscending(categoryId, searchValue, maxPrice) :
+                        productRepository.filterProductsAndSortByDateAscending(searchValue, maxPrice);
+            case SortingOptions.BY_DATE_DESCENDING:
+                return categoryId > 0 ?
+                        productRepository.filterProductsAndSortByDateDescending(categoryId, searchValue, maxPrice) :
+                        productRepository.filterProductsAndSortByDateDescending(searchValue, maxPrice);
+            case SortingOptions.BY_PRICE_DESCENDING:
+                return categoryId > 0 ?
+                        productRepository.filterProductsAndSortByPriceDescending(categoryId, searchValue, maxPrice) :
+                        productRepository.filterProductsAndSortByPriceDescending(searchValue, maxPrice);
+            case SortingOptions.BY_PRICE_ASCENDING:
+            default:
+                return categoryId > 0 ?
+                        productRepository.filterProductsAndSortByPriceAscending(categoryId, searchValue, maxPrice) :
+                        productRepository.filterProductsAndSortByPriceAscending(searchValue, maxPrice);
+        }
+    }
+
+    @Override
     public List<Product> getLastAddedProducts(int limit) {
         return productRepository.getLastAddedProducts(limit);
     }
@@ -67,6 +106,7 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
     @Override
     public int addProductAndGetId(ProductDto productDto, String userEmail) {
         Product product = getBasicConversion(productDto, false);
+        product.setAdded(webApplicationContext.getBean(Timestamp.class));
 
         UserActivity userActivity = webApplicationContext.getBean(UserActivity.class);
         userActivity.setTag(UserActivity.Tags.ADD_PRODUCT);

@@ -8,6 +8,7 @@ import com.company.model.UserAccount;
 import com.company.service.AccountService;
 import com.company.service.ProductService;
 import com.company.util.GeneralUtilities;
+import com.company.util.Pair;
 import com.company.util.SessionCart;
 import com.google.gson.Gson;
 import lombok.Getter;
@@ -18,10 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpSession;
@@ -29,21 +27,32 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping(path = ProductController.PathHandler.BASE_URL)
 public class ProductController extends AbstractController {
 
     public interface ViewHandler {
+        String PRODUCTS = "products";
         String PRODUCT_ADD = "product-add";
         String PRODUCT_DETAILS = "product-details";
         String PRODUCT_UPDATE = "product-update";
         String PRODUCT_DELETE_RESPONSE = "product-delete-response";
         String PRODUCT_CART = "product-cart";
+        String PRODUCT_TABLE = "templates/products-table";
     }
 
     public interface PathHandler {
         String BASE_URL = "/products";
+        String FILTER_PRODUCTS_URL = "/filter";
+        String FULL_FILTER_PRODUCTS_URL = BASE_URL + FILTER_PRODUCTS_URL;
+
+        String SUB_VIEW_PRODUCTS_URL = "/sub-view-all";
+        String FULL_SUB_VIEW_PRODUCTS_URL = BASE_URL + SUB_VIEW_PRODUCTS_URL;
+
         String PRODUCT_DETAILS_URL = "/details";
         String FULL_PRODUCT_DETAILS_URL = BASE_URL + PRODUCT_DETAILS_URL;
 
@@ -79,6 +88,8 @@ public class ProductController extends AbstractController {
     public interface Security {
         String[] PERMIT_ALL = {
                 PathHandler.BASE_URL,
+                PathHandler.FULL_SUB_VIEW_PRODUCTS_URL,
+                PathHandler.FULL_FILTER_PRODUCTS_URL,
                 PathHandler.FULL_PRODUCT_DETAILS_URL + "/*"
         };
 
@@ -115,6 +126,32 @@ public class ProductController extends AbstractController {
     @Override
     protected Class<?> getClassType() {
         return ProductController.class;
+    }
+
+    @RequestMapping(path = PathHandler.FILTER_PRODUCTS_URL, method = RequestMethod.GET)
+    public String filterAndSortProducts(@RequestParam(value = "categoryId", required = false, defaultValue = "-1") int categoryId,
+                                        @RequestParam(value = "search", required = false, defaultValue = "") String searchValue,
+                                        @RequestParam(value = "maxPrice", required = false, defaultValue = ProductDto.MAX_PRODUCT_PRICE) float maxPrice,
+                                        @RequestParam(value = "sort", required = false, defaultValue = "0") int sortOption,
+                                        @RequestParam(value = "subView", required = false, defaultValue = "false") boolean subView,
+                                        Model model,
+                                        HttpSession httpSession){
+
+        List<Product> productList = productService.filterProducts(categoryId, searchValue, maxPrice, sortOption);
+        if(httpSession != null){
+            Object object = httpSession.getAttribute(ProductController.SESSION_CART_ATTRIBUTE_KEY);
+            if(object instanceof SessionCart){
+                SessionCart sessionCart = (SessionCart) object;
+                productList.forEach(pr -> pr.setAddedToCart(sessionCart.checkIfProductIsAdded(pr.getId())));
+            }
+        }
+
+        model.addAttribute("groupedProductList", divideIntoGroups(productList));
+        if(subView){
+            return ViewHandler.PRODUCT_TABLE;
+        }
+
+        return ViewHandler.PRODUCTS;
     }
 
     @RequestMapping(path = PathHandler.ADD_PRODUCT_URL, method = RequestMethod.GET)
@@ -310,6 +347,33 @@ public class ProductController extends AbstractController {
         cartResponse.setCartItems(sessionCart.cartSize());
         cartResponse.setTotalAmount(sessionCart.getTotalAmount());
         return new ResponseEntity<>(new Gson().toJson(cartResponse, CartResponse.class), HttpStatus.OK);
+    }
+
+    private List<List<Pair<Boolean, Product>>> divideIntoGroups(List<Product> productList){
+        // group products 4 by 4 in order to create 4 by for table in view
+        final int groupSize = 4;
+        List<List<Pair<Boolean, Product>>> groupedProducts = new ArrayList<>();
+        ArrayList<Integer> indexes = new ArrayList<>();
+        IntStream.range(0, productList.size()).filter(x -> x % groupSize == 0).forEach(indexes::add);
+        indexes.add(productList.size());
+
+        final int lim = indexes.size();
+        for(int i = 1; i < lim; i++){
+            List<Pair<Boolean, Product>> tmp = new ArrayList<>();
+            productList.subList(indexes.get(i-1), indexes.get(i)).forEach(pr -> tmp.add(new Pair<>(Boolean.TRUE, pr)));
+            groupedProducts.add(tmp);
+        }
+
+        // if last group has not enough items add empty items with Boolean.FALSE
+        List<Pair<Boolean, Product>> lastGroup = groupedProducts.get(groupedProducts.size() - 1);
+        final int lastGroupSize = lastGroup.size();
+        if(lastGroupSize < groupSize){
+            for(int i = lastGroupSize; i < groupSize; i++){
+                lastGroup.add(new Pair<>(Boolean.FALSE, webApplicationContext.getBean(Product.class)));
+            }
+        }
+
+        return groupedProducts;
     }
 
     @Getter

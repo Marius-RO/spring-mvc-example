@@ -18,7 +18,7 @@
 
             <div class="collapse navbar-collapse " id="navbarSupportedContent">
 
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav">
 
                     <li class="nav-item px-2">
                         <a class="nav-link inactive" aria-current="page" href="${rootControllerHomePageLink}">Home</a>
@@ -32,18 +32,27 @@
                         <!-- categories -->
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <c:forEach var="category" items="${sessionScope.globalCategoriesList}">
-                                <a class="dropdown-item" href="#">${category.name}</a>
+                                <a class="dropdown-item" href="<c:url value="${dynamic_productControllerFilterProductsLink}?categoryId=${category.id}" />">${category.name}</a>
                             </c:forEach>
                         </div>
                     </li>
 
-                    <li class="nav-item custom-search">
-                        <form class="form-inline my-2 my-lg-0">
-                            <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-                        </form>
-                    </li>
-
                 </ul>
+
+                <div class="container-fluid">
+                    <c:url var="searhProduct" value="${dynamic_productControllerFilterProductsLink}"/>
+                    <form:form action="${searhProduct}" method="get" class="row custom-search-div">
+                        <div class="col-auto w-50">
+                            <c:if test="${param.categoryId != null}">
+                                <input hidden type="text" name="categoryId" value="${param.categoryId}">
+                            </c:if>
+                            <input class="form-control" type="search" name="search">
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-outline-light" type="submit">Search</button>
+                        </div>
+                    </form:form>
+                </div>
 
                 <ul class="navbar-nav ms-auto">
 

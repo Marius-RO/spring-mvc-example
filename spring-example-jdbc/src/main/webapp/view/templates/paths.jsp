@@ -46,6 +46,7 @@
 <c:set var="dynamic_productControllerProcessDeleteFromCartLink" value="/products/delete-from-cart" scope="application"/>
 <c:set var="dynamic_productControllerProcessAddToCartLink" value="/products/add-to-cart" scope="application"/>
 <c:set var="dynamic_productControllerProcessUpdateCartQuantityLink" value="/products/update-cart-quantity" scope="application"/>
+<c:set var="dynamic_productControllerFilterProductsLink" value="/products/filter" scope="application"/>
 
 
 <%-- -------------------------------------------------

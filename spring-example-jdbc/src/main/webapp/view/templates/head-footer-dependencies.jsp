@@ -63,10 +63,6 @@
         background-color: #eeeff1;
     }
 
-    .custom-search {
-        margin-left: 10px;
-    }
-
     .form-control {
         display: inline;
     }
@@ -85,6 +81,11 @@
 
     .custom-logout-form {
         margin-bottom: 0px;
+    }
+
+    .custom-search-div {
+        margin-top: auto;
+        margin-bottom: auto;
     }
 
     .custom-up-spacer {

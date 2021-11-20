@@ -27,17 +27,71 @@ public class ProductRepositoryImpl extends AbstractRepository implements Product
 
     private static final String DEF_GET_ALL_PRODUCTS_SQL = "SELECT * FROM products";
     private static final String DEF_GET_LAST_ADDED_PRODUCTS_WITH_LIMIT_SQL = "SELECT * FROM products ORDER BY id DESC limit ?";
-    private static final String DEF_GET_PRODUCT_SQL = "SELECT id, price, stock, name, description, image_base_64 FROM products WHERE id = ?";
-    private static final String DEF_GET_PRODUCT_CATEGORIES_IDS_BY_PRODUCT_ID_SQL = "SELECT DISTINCT fk_category_id FROM product_category_many_to_many WHERE fk_product_id = ?";
-    private static final String DEF_INSERT_PRODUCT_SQL = "INSERT INTO products (price, stock, name, description, image_base_64) VALUES (?, ?, ?, ?, ?)";
-    private static final String DEF_UPDATE_PRODUCT_SQL = "UPDATE products " +
-                                                         "SET price = ?, stock = ?, name = ?, description = ?, image_base_64 = ? " +
-                                                         "WHERE id = ?";
+    private static final String DEF_GET_PRODUCT_SQL = "SELECT * FROM products WHERE id = ?";
+
+    private static final String DEF_GET_PRODUCT_CATEGORIES_IDS_BY_PRODUCT_ID_SQL =
+            "SELECT DISTINCT fk_category_id FROM product_category_many_to_many WHERE fk_product_id = ?";
+
+    private static final String DEF_INSERT_PRODUCT_SQL =
+            "INSERT INTO products (price, stock, name, description, image_base_64, added) VALUES (?, ?, ?, ?, ?, ?)";
+
+    private static final String DEF_UPDATE_PRODUCT_SQL =
+         "UPDATE products " +
+         "SET price = ?, stock = ?, name = ?, description = ?, image_base_64 = ?, added = ?" +
+         "WHERE id = ?";
+
     private static final String DEF_DELETE_PRODUCT_SQL = "DELETE FROM products WHERE id = ?";
 
-    private static final String DEF_INSERT_PRODUCT_RELATED_ACTIVITY_SQL = "INSERT INTO user_activities (tag, before_value, after_value, added, fk_username) VALUES (?, ?, ?, ?, ?)";
-    private static final String DEF_INSERT_PRODUCT_CATEGORY_RELATION_MANY_TO_MANY_SQL = "INSERT INTO product_category_many_to_many (fk_product_id, fk_category_id) VALUES (?, ?)";
-    private static final String DEF_DELETE_PRODUCT_CATEGORY_RELATION_MANY_TO_MANY_SQL = "DELETE FROM product_category_many_to_many WHERE fk_product_id = ?";
+    private static final String DEF_INSERT_PRODUCT_RELATED_ACTIVITY_SQL =
+            "INSERT INTO user_activities (tag, before_value, after_value, added, fk_username) VALUES (?, ?, ?, ?, ?)";
+
+    private static final String DEF_INSERT_PRODUCT_CATEGORY_RELATION_MANY_TO_MANY_SQL =
+            "INSERT INTO product_category_many_to_many (fk_product_id, fk_category_id) VALUES (?, ?)";
+
+    private static final String DEF_DELETE_PRODUCT_CATEGORY_RELATION_MANY_TO_MANY_SQL =
+            "DELETE FROM product_category_many_to_many WHERE fk_product_id = ?";
+
+    // for filter and sorting
+    private static final String DEF_BASE_DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_SQL =
+            "SELECT id, price, stock, name, description, image_base_64, added " +
+            "FROM products p JOIN product_category_many_to_many pcm ON (p.id = pcm.fk_product_id) " +
+            "WHERE pcm.fk_category_id = ? AND " +
+            "p.name LIKE ? AND " +
+            "p.price BETWEEN 0 AND ? " +
+            "ORDER BY";
+
+    private static final String DEF_BASE_DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_SQL = "SELECT * " +
+                                                                                      "FROM products " +
+                                                                                      "WHERE name LIKE ? AND " +
+                                                                                      "price BETWEEN 0 AND ? " +
+                                                                                      "ORDER BY ";
+
+    private static final String DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_PRICE_ASCENDING_SQL =
+            DEF_BASE_DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_SQL + " p.price ASC";
+
+    private static final String DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_PRICE_ASCENDING_SQL =
+            DEF_BASE_DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_SQL + " price ASC";
+
+    private static final String DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_PRICE_DESCENDING_SQL =
+            DEF_BASE_DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_SQL + " p.price DESC";
+
+    private static final String DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_PRICE_DESCENDING_SQL =
+            DEF_BASE_DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_SQL + " price DESC";
+
+    private static final String DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_DATE_ASCENDING_SQL =
+            DEF_BASE_DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_SQL + " p.added ASC";
+
+    private static final String DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_DATE_ASCENDING_SQL =
+            DEF_BASE_DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_SQL + " added ASC";
+
+    private static final String DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_DATE_DESCENDING_SQL =
+            DEF_BASE_DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_SQL + " p.added DESC";
+
+    private static final String DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_DATE_DESCENDING_SQL =
+            DEF_BASE_DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_SQL + " added DESC";
+
+
+
 
     @Autowired
     public ProductRepositoryImpl(WebApplicationContext webApplicationContext, JdbcTemplate jdbcTemplate) {
@@ -116,6 +170,7 @@ public class ProductRepositoryImpl extends AbstractRepository implements Product
             insertPreparedStatement.setString(3, product.getName());
             insertPreparedStatement.setString(4, product.getDescription());
             insertPreparedStatement.setString(5, product.getImageBase64());
+            insertPreparedStatement.setTimestamp(6, product.getAdded());
             return insertPreparedStatement;
         }, keyHolder);
 
@@ -136,7 +191,8 @@ public class ProductRepositoryImpl extends AbstractRepository implements Product
         // TODO: mark this as transactional
 
         // update product
-        Object[] args = {product.getPrice(), product.getStock(), product.getName(), product.getDescription(), product.getImageBase64(), product.getId()};
+        Object[] args = {product.getPrice(), product.getStock(), product.getName(), product.getDescription(),
+                product.getImageBase64(), product.getAdded(), product.getId()};
         jdbcTemplate.update(DEF_UPDATE_PRODUCT_SQL, args);
 
         // update many-to-many relation
@@ -159,6 +215,83 @@ public class ProductRepositoryImpl extends AbstractRepository implements Product
 
         // mark activity
         jdbcTemplate.update(DEF_INSERT_PRODUCT_RELATED_ACTIVITY_SQL, getUserActivityArgs(userActivity));
+    }
+
+    @Override
+    public List<Product> filterProductsAndSortByDateAscending(int categoryId, String searchValue, float maxPrice) {
+        return filterAndSort(
+                DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_DATE_ASCENDING_SQL,
+                getFilterArgs(categoryId, searchValue, maxPrice)
+        );
+    }
+
+    @Override
+    public List<Product> filterProductsAndSortByDateAscending(String searchValue, float maxPrice) {
+        return filterAndSort(
+                DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_DATE_ASCENDING_SQL,
+                getFilterArgs(searchValue, maxPrice)
+        );
+    }
+
+    @Override
+    public List<Product> filterProductsAndSortByDateDescending(int categoryId, String searchValue, float maxPrice) {
+        return filterAndSort(
+                DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_DATE_DESCENDING_SQL,
+                getFilterArgs(categoryId, searchValue, maxPrice)
+        );
+    }
+
+    @Override
+    public List<Product> filterProductsAndSortByDateDescending(String searchValue, float maxPrice) {
+        return filterAndSort(
+                DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_DATE_DESCENDING_SQL,
+                getFilterArgs(searchValue, maxPrice)
+        );
+    }
+
+    @Override
+    public List<Product> filterProductsAndSortByPriceAscending(int categoryId, String searchValue, float maxPrice) {
+        return filterAndSort(
+                DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_PRICE_ASCENDING_SQL,
+                getFilterArgs(categoryId, searchValue, maxPrice)
+        );
+    }
+
+    @Override
+    public List<Product> filterProductsAndSortByPriceAscending(String searchValue, float maxPrice) {
+        return filterAndSort(
+                DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_PRICE_ASCENDING_SQL,
+                getFilterArgs(searchValue, maxPrice)
+        );
+    }
+
+    @Override
+    public List<Product> filterProductsAndSortByPriceDescending(int categoryId, String searchValue, float maxPrice) {
+        return filterAndSort(
+                DEF_FILTER_BY_CATEGORY_AND_NAME_PATTERN_AND_SORT_BY_PRICE_DESCENDING_SQL,
+                getFilterArgs(categoryId, searchValue, maxPrice)
+        );
+    }
+
+    @Override
+    public List<Product> filterProductsAndSortByPriceDescending(String searchValue, float maxPrice) {
+        return filterAndSort(
+                DEF_FILTER_BY_NAME_PATTERN_AND_SORT_BY_PRICE_DESCENDING_SQL,
+                getFilterArgs(searchValue, maxPrice)
+        );
+    }
+
+
+    private List<Product> filterAndSort(String sql, Object[] args){
+        return jdbcTemplate.query(sql, args,  webApplicationContext.getBean(ProductsResultSetExtractor.class));
+    }
+
+    private Object[] getFilterArgs(int categoryId, String searchValue, float maxPrice){
+        return new Object[]{categoryId, "%" + searchValue + "%", maxPrice};
+    }
+
+    private Object[] getFilterArgs(String searchValue, float maxPrice){
+        return new Object[]{"%" + searchValue + "%", maxPrice};
     }
 
     private Object[] getUserActivityArgs(UserActivity userActivity){

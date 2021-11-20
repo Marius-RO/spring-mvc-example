@@ -11,6 +11,7 @@ public interface ProductService {
     int getProductStock(int productId);
     float getProductPrice(int productId);
     List<Product> getAllProducts();
+    List<Product> filterProducts(int categoryId, String searchValue, float maxPrice, int sortOption);
     List<Product> getLastAddedProducts(int limit);
     int[] getProductCategoriesByProductId(int productId);
     int addProductAndGetId(ProductDto productDto, String userEmail);
