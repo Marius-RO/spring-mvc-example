@@ -21,21 +21,21 @@ public class RootController extends AbstractController {
 
     public interface ViewHandler {
         String HOME = "index";
-        String ACCESS_DENIED = "error-access-denied";
+        String ABOUT_US = "about-us";
     }
 
     public interface PathHandler {
         String BASE_URL = "/";
         String HOME_URL = "index";
         String FULL_HOME_URL = BASE_URL + HOME_URL;
-        String ACCESS_DENIED_URL = "access-denied";
-        String FULL_ACCESS_DENIED_URL = BASE_URL + ACCESS_DENIED_URL;
+        String ABOUT_US_URL = "about-us";
+        String FULL_ABOUT_US_URL = BASE_URL + ABOUT_US_URL;
     }
 
     public interface Security {
         String[] PERMIT_ALL = {
                 PathHandler.FULL_HOME_URL,
-                PathHandler.FULL_ACCESS_DENIED_URL
+                PathHandler.FULL_ABOUT_US_URL
         };
     }
 
@@ -83,9 +83,9 @@ public class RootController extends AbstractController {
         return ViewHandler.HOME;
     }
 
-    @RequestMapping(path = PathHandler.ACCESS_DENIED_URL, method = RequestMethod.GET)
-    public String getAccessDeniedPage(){
-        return ViewHandler.ACCESS_DENIED;
+    @RequestMapping(path = PathHandler.ABOUT_US_URL, method = RequestMethod.GET)
+    public String getAboutUsPage(){
+        return ViewHandler.ABOUT_US;
     }
 
 }

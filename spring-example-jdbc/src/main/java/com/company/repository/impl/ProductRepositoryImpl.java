@@ -37,7 +37,7 @@ public class ProductRepositoryImpl extends AbstractRepository implements Product
 
     private static final String DEF_UPDATE_PRODUCT_SQL =
          "UPDATE products " +
-         "SET price = ?, stock = ?, name = ?, description = ?, image_base_64 = ?, added = ?" +
+         "SET price = ?, stock = ?, name = ?, description = ?, image_base_64 = ?, added = ? " +
          "WHERE id = ?";
 
     private static final String DEF_DELETE_PRODUCT_SQL = "DELETE FROM products WHERE id = ?";

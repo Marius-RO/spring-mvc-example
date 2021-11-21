@@ -62,7 +62,7 @@ public class OrderController extends AbstractController {
     @RequestMapping(path = PathHandler.ORDERS_URL, method = RequestMethod.GET)
     public String getOrdersPage(Authentication authentication, Model model){
         if(authentication == null || !authentication.isAuthenticated()){
-            return RootController.ViewHandler.ACCESS_DENIED;
+            return ErrorController.ViewHandler.ERROR_ACCESS_DENIED;
         }
 
         boolean isCustomer = false;

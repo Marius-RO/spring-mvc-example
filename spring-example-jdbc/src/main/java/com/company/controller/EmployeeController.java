@@ -31,7 +31,7 @@ public class EmployeeController extends AbstractController {
 
     public interface Security {
         String[] PERMIT_ONLY_ADMIN = {
-                CategoryController.PathHandler.BASE_URL + "/*",
+                PathHandler.BASE_URL + "/**",
         };
     }
 

@@ -2,15 +2,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
     <head>
-        <title>Access denied page</title>
-        <jsp:include page="templates/head-footer-dependencies.jsp"/>
+        <title>Error</title>
     </head>
 
-    <body class="d-flex flex-column min-vh-100">
-        <jsp:include page="templates/navbar.jsp"/>
-
-        <h1>Access denied page</h1>
-
-        <jsp:include page="templates/footer.jsp"/>
+    <body>
+        <h2>Access denied</h2>
     </body>
 </html>

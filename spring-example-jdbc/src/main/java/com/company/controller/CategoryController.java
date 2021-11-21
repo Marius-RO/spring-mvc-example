@@ -44,7 +44,7 @@ public class CategoryController extends AbstractController {
 
     public interface Security {
         String[] PERMIT_ONLY_ADMIN = {
-                PathHandler.BASE_URL + "/*",
+                PathHandler.BASE_URL + "/**",
         };
     }
 

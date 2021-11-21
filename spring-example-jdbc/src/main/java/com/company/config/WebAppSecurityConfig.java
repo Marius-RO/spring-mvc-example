@@ -7,10 +7,13 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @EnableWebSecurity(debug = false)
 public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -40,53 +43,81 @@ public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-                // Account controller
-                .authorizeRequests().antMatchers(AccountController.Security.PERMIT_ALL).permitAll()
-                .and()
-                .authorizeRequests().antMatchers(AccountController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE)
-                                        .hasAnyAuthority(Roles.ROLE_CUSTOMER, Roles.ROLE_EMPLOYEE)
-                .and()
-                .authorizeRequests().antMatchers(AccountController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE_ADMIN)
-                                    .hasAnyAuthority(Roles.ROLE_CUSTOMER, Roles.ROLE_EMPLOYEE, Roles.ROLE_ADMIN)
-                .and()
-                // Root controller
-                .authorizeRequests().antMatchers(RootController.Security.PERMIT_ALL).permitAll()
-                .and()
 
-                // CategoryController
-                .authorizeRequests().antMatchers(CategoryController.Security.PERMIT_ONLY_ADMIN).hasAuthority(Roles.ROLE_ADMIN)
+                .authorizeRequests().antMatchers(getPermitAll()).permitAll()
                 .and()
-
-                // ProductController
-                .authorizeRequests().antMatchers(ProductController.Security.PERMIT_ALL).permitAll()
+                .authorizeRequests().antMatchers(getPermitOnlyCustomerAndEmployee()).hasAnyAuthority(Roles.ROLE_CUSTOMER, Roles.ROLE_EMPLOYEE)
                 .and()
-                .authorizeRequests().antMatchers(ProductController.Security.PERMIT_ONLY_EMPLOYEE_ADMIN).hasAnyAuthority(Roles.ROLE_EMPLOYEE, Roles.ROLE_ADMIN)
+                .authorizeRequests().antMatchers(getPermitOnlyEmployeeAndAdmin()).hasAnyAuthority(Roles.ROLE_EMPLOYEE, Roles.ROLE_ADMIN)
                 .and()
-                .authorizeRequests().antMatchers(ProductController.Security.PERMIT_ONLY_VISITOR_CUSTOMER).not().hasAnyAuthority(Roles.ROLE_EMPLOYEE, Roles.ROLE_ADMIN)
+                .authorizeRequests().antMatchers(getPermitOnlyAdmin()).hasAuthority(Roles.ROLE_ADMIN)
                 .and()
-
-
-                // OrderController
-                .authorizeRequests().antMatchers(OrderController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE_ADMIN).authenticated()
-                .and()
-
-                // EmployeeController
-                .authorizeRequests().antMatchers(EmployeeController.Security.PERMIT_ONLY_ADMIN).hasAuthority(Roles.ROLE_ADMIN)
+                .authorizeRequests().antMatchers(getPermitOnlyVisitorAndCustomer()).not().hasAnyAuthority(Roles.ROLE_EMPLOYEE, Roles.ROLE_ADMIN)
                 .and()
                 .authorizeRequests().anyRequest().authenticated()
                 .and()
-                .formLogin().loginPage("/account/login").defaultSuccessUrl("/index", true)
+                .formLogin().loginPage(AccountController.PathHandler.FULL_LOGIN_URL).defaultSuccessUrl("/index", true)
                 .and()
                 .httpBasic()
                 .and()
                 .logout()
                 .and()
-                .exceptionHandling().accessDeniedPage("/access-denied");
+                .exceptionHandling().accessDeniedPage(ErrorController.PathHandler.FULL_ERROR_ACCESS_DENIED_URL);
     }
 
     @Bean(name = "passwordEncoder")
     public PasswordEncoder getPasswordEncoder(){
-        //return new BCryptPasswordEncoder();
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
+    }
+
+    private String[] getPermitAll(){
+        return extractPaths(
+                RootController.Security.PERMIT_ALL,
+                AccountController.Security.PERMIT_ALL,
+                ProductController.Security.PERMIT_ALL,
+                ErrorController.Security.PERMIT_ALL
+        );
+    }
+
+    private String[] getPermitOnlyCustomerAndEmployee(){
+        return extractPaths(
+                AccountController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE
+        );
+    }
+
+    private String[] getPermitOnlyCustomerAndEmployeeAndAdmin(){
+        // this is covered by '.authorizeRequests().anyRequest().authenticated()'
+        return extractPaths(
+                AccountController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE_ADMIN,
+                OrderController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE_ADMIN
+        );
+    }
+
+    private String[] getPermitOnlyEmployeeAndAdmin(){
+        return extractPaths(
+                ProductController.Security.PERMIT_ONLY_EMPLOYEE_ADMIN,
+                ErrorController.Security.PERMIT_ONLY_EMPLOYEE_ADMIN
+        );
+    }
+
+    private String[] getPermitOnlyAdmin(){
+        return extractPaths(
+                EmployeeController.Security.PERMIT_ONLY_ADMIN,
+                CategoryController.Security.PERMIT_ONLY_ADMIN
+        );
+    }
+
+    private String[] getPermitOnlyVisitorAndCustomer(){
+        return extractPaths(
+                ProductController.Security.PERMIT_ONLY_VISITOR_CUSTOMER
+        );
+    }
+
+    private String[] extractPaths(String[]... paths){
+        List<String> values = new ArrayList<>();
+        for(String[] path : paths){
+            values.addAll(Arrays.asList(path));
+        }
+        return values.toArray(new String[0]);
     }
 }

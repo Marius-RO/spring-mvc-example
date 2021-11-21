@@ -112,19 +112,29 @@
 
                 let elemBefore = document.getElementById("idBeforeActivityModal" + id);
                 let beforeJsonValue = JSON.parse(elemBefore.textContent);
-                beforeJsonValue.imageBase64 = "";
-                elemBefore.textContent = JSON.stringify(beforeJsonValue, undefined, 2);
+                if(JSON.stringify(beforeJsonValue, undefined, 2) === '{}'){
+                    elemBefore.textContent = "{}";
+                }
+                else{
+                    beforeJsonValue.imageBase64 = "";
+                    elemBefore.textContent = JSON.stringify(beforeJsonValue, undefined, 2);
+                }
 
                 let elemAfter = document.getElementById("idAfterActivityModal" + id);
                 let afterJsonValue = JSON.parse(elemAfter.textContent);
-                afterJsonValue.imageBase64 = "";
-                elemAfter.textContent = JSON.stringify(afterJsonValue, undefined, 2);
+                if(JSON.stringify(afterJsonValue, undefined, 2) === '{}'){
+                    elemAfter.textContent = "{}";
+                }
+                else{
+                    afterJsonValue.imageBase64 = "";
+                    elemAfter.textContent = JSON.stringify(afterJsonValue, undefined, 2);
+                }
 
-                $('#idEmployeeActivityModal' + id).modal('show')
+                $('#idEmployeeActivityModal' + id).modal('show');
             }
 
             function closeEmployeeActivityModal(id){
-                $('#idEmployeeActivityModal' + id).modal('hide')
+                $('#idEmployeeActivityModal' + id).modal('hide');
             }
 
         </script>

@@ -32,7 +32,7 @@ public class Product {
     public static String toJson(Product product){
         Gson gson = new Gson();
         if(product == null){
-            return gson.toJson("");
+            return gson.toJson("{}");
         }
 
         return gson.toJson(product, Product.class);

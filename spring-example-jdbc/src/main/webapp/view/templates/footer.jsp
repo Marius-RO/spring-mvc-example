@@ -1,10 +1,13 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" isELIgnored="false" %>
+<%@include file="paths.jsp" %>
+
 <div class="custom-up-spacer"></div>
 <footer class="py-5 bg-dark mt-auto">
     <div class="container">
-        <p class="m-0 text-center text-white"> <a class="custom-footer-link" href="#">About us</a> </p>
+        <p class="m-0 text-center text-white"> <a class="custom-footer-link" href="${rootControllerAboutUsPageLink}">About us</a> </p>
         <br/>
-        <p class="m-0 text-center text-white">  &copy; 2021 Copyright:  Your brand here</p></div>
+        <p class="m-0 text-center text-white">  &copy; 2021 Copyright: eShop</p></div>
 </footer>
 
 <!-- boostrap -->

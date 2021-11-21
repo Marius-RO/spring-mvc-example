@@ -5,6 +5,7 @@
                    RootController
      ------------------------------------------------- --%>
 <c:url var="rootControllerHomePageLink" value="/index"/>
+<c:url var="rootControllerAboutUsPageLink" value="/about-us"/>
 
 <%-- -------------------------------------------------
                    AccountController

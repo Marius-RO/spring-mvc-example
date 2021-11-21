@@ -128,7 +128,7 @@
             let sortingRadios = document.querySelectorAll("input[type=radio][name=mainSorting]");
             let priceRangeElem = document.getElementById("idPriceRange");
             let currentMaxValue = document.getElementById("idCurrentMaxValue");
-            priceRangeElem.value = 400; // set a default value (for showing purpose only)
+            priceRangeElem.value = priceRangeElem.max; // set a default value (for showing purpose only)
             currentMaxValue.textContent = '(' + priceRangeElem.value + ')';
 
             $(document).ready(new function (){

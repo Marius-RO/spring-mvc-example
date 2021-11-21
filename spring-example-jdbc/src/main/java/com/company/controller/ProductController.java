@@ -364,12 +364,14 @@ public class ProductController extends AbstractController {
             groupedProducts.add(tmp);
         }
 
-        // if last group has not enough items add empty items with Boolean.FALSE
-        List<Pair<Boolean, Product>> lastGroup = groupedProducts.get(groupedProducts.size() - 1);
-        final int lastGroupSize = lastGroup.size();
-        if(lastGroupSize < groupSize){
-            for(int i = lastGroupSize; i < groupSize; i++){
-                lastGroup.add(new Pair<>(Boolean.FALSE, webApplicationContext.getBean(Product.class)));
+        // if at least one group exists and last group has not enough items add empty items with Boolean.FALSE
+        if(!groupedProducts.isEmpty()){
+            List<Pair<Boolean, Product>> lastGroup = groupedProducts.get(groupedProducts.size() - 1);
+            final int lastGroupSize = lastGroup.size();
+            if(lastGroupSize < groupSize){
+                for(int i = lastGroupSize; i < groupSize; i++){
+                    lastGroup.add(new Pair<>(Boolean.FALSE, webApplicationContext.getBean(Product.class)));
+                }
             }
         }
 
