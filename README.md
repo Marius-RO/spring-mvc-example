@@ -32,20 +32,62 @@ It is a simple web application (online shop) that contains CRUD functionalities 
 * **MySQL** (for data storage)
 * **Spring Core** (for dependency injection)
 * **Spring MVC** (for building the actual MVC application)
-* **Spring Data JDBC** (for data storage in a MySQL database)
+* **Spring Data JDBC** (for database communication/operations)
 * **Spring Security** (for user authentication and authorization)
 * **Docker** (for the containerization of the application) 
 
 
-## Installation
+## Installation and Getting Started
 
+### **1. Prerequisites:** 
+* [Docker](https://docs.docker.com/get-docker/)
 
+### **2. Installing**
+```
+$ git clone https://github.com/Marius-RO/spring-mvc-example.git
+$ cd spring-mvc-example/install
+$ docker compose -f app-compose.yaml up
+```
+### **3. Run the app**
+
+* After the containers are started app can be accessed at http://localhost:8888
+
+* By default this application will have already some demo data and some demo role-based accounts:
+  * **Customers:** customer_1.demo@yahoo.com and customer_2.demo@gmail.com
+  * **Employees:** employee_1.demo@yahoo.com and employee_2.demo@gmail.com
+  * **Admin:** admin.demo@gmail.com
+ 
+* Password is **123456** for every account.
+
+### **4. Stop the app**
+
+* Make sure you are in the right directory **spring-mvc-example/install** in order to use the following command.
+
+```
+$ docker compose -f app-compose.yaml down
+```
+
+---
 ## Demo (only the specific functionalities of each role will be presented)
 
-### Visitor
+* ### Visitor
 
-### Customer
+https://user-images.githubusercontent.com/37272520/142882445-130136d5-f3b5-4c8a-b4c0-18e5323eb983.mp4
 
-### Employee
+* ### Customer
 
-### Admin
+https://user-images.githubusercontent.com/37272520/142882507-e6ffb20c-380a-4dd5-b5e3-38cfd27b61c5.mp4
+
+* ### Employee
+
+https://user-images.githubusercontent.com/37272520/142882553-47a14327-659a-4929-abed-5a92e89895a5.mp4
+
+* ### Admin
+
+https://user-images.githubusercontent.com/37272520/142882610-76b2b017-23b3-47ea-a496-3911d7447f5b.mp4
+
+---
+## Reporting Issues
+
+* New issues can be created [here](https://github.com/Marius-RO/spring-mvc-example/issues/new).
+* If you want to report a bug, please provide as much information as possible with the issue report.
