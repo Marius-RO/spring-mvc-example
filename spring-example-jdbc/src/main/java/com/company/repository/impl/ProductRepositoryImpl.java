@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -157,8 +158,8 @@ public class ProductRepositoryImpl extends AbstractRepository implements Product
     }
 
     @Override
+    @Transactional
     public int insertProductAndGetId(Product product, UserActivity userActivity, HashSet<Integer> categoriesIds) {
-        // TODO: mark this as transactional
 
         // insert product
         // https://stackoverflow.com/questions/14537546/how-to-get-generated-id-after-i-inserted-into-a-new-data-record-in-database-usin
@@ -187,8 +188,8 @@ public class ProductRepositoryImpl extends AbstractRepository implements Product
     }
 
     @Override
+    @Transactional
     public void updateProduct(Product product, UserActivity userActivity, HashSet<Integer> categoriesIds) {
-        // TODO: mark this as transactional
 
         // update product
         Object[] args = {product.getPrice(), product.getStock(), product.getName(), product.getDescription(),
@@ -206,8 +207,8 @@ public class ProductRepositoryImpl extends AbstractRepository implements Product
     }
 
     @Override
+    @Transactional
     public void deleteProduct(int productId, UserActivity userActivity) {
-        // TODO: mark this as transactional
         // delete product
         jdbcTemplate.update(DEF_DELETE_PRODUCT_SQL, productId);
 

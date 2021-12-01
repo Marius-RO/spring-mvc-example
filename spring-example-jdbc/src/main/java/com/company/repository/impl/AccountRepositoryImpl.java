@@ -13,6 +13,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.sql.PreparedStatement;
@@ -43,8 +44,8 @@ public class AccountRepositoryImpl extends AbstractRepository implements Account
     }
 
     @Override
+    @Transactional
     public void insertUser(UserAccount userAccount, String... roles) {
-        // TODO: make this as transactional
 
         // add user
         jdbcTemplate.update(DEF_CREATE_USER_SQL, ps -> {

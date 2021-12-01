@@ -6,6 +6,7 @@ import com.company.repository.impl.util.AbstractRepository;
 import com.company.repository.mappers.orders.OrdersResultSetExtractor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
@@ -40,8 +41,8 @@ public class OrderRepositoryImpl extends AbstractRepository implements OrderRepo
     }
 
     @Override
+    @Transactional
     public void insertOrder(Order order, HashMap<Integer, Integer> quantitiesForUpdate) {
-        // TODO: mak this as transactional
         // decrease quantities for products stock
         List<Object[]> batchArgs = new ArrayList<>();
         for(Integer productId : quantitiesForUpdate.keySet()){

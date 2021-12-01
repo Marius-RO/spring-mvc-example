@@ -8,8 +8,11 @@ import org.springframework.context.annotation.*;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.context.WebApplicationContext;
@@ -31,6 +34,7 @@ import java.util.Objects;
             @PropertySource(value = "classpath:default-values.properties")
     }
 )
+@EnableTransactionManagement
 public class WebAppMvcConfig implements WebMvcConfigurer {
 
     private static final int MB_SIZE = 1024 * 1024;
@@ -114,5 +118,10 @@ public class WebAppMvcConfig implements WebMvcConfigurer {
         resolver.setDefaultEncoding("utf-8");
         resolver.setMaxUploadSizePerFile(MAX_UPLOAD_SIZE);
         return resolver;
+    }
+
+    @Bean(name = "transactionManager")
+    public PlatformTransactionManager getTransactionManager() {
+        return new DataSourceTransactionManager(getDataSource());
     }
 }
