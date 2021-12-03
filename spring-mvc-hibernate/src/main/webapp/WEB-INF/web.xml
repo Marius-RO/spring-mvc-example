@@ -3,7 +3,7 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Spring-example</display-name>
+  <display-name>spring-mvc-hibernate</display-name>
 
   <welcome-file-list>
     <welcome-file>view/index.jsp</welcome-file>
