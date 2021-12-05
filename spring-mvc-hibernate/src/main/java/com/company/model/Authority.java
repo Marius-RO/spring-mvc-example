@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -16,35 +15,27 @@ import java.sql.Timestamp;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Entity
-@Table(name = "user_activities")
-public class UserActivity {
-
-    public interface Tags {
-        String ADD_PRODUCT = "ADD_PRODUCT";
-        String UPDATE_PRODUCT = "UPDATE_PRODUCT";
-        String DELETE_PRODUCT = "DELETE_PRODUCT";
-    }
+@Table(name = "authorities")
+public class Authority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private int id;
+    private long id;
 
-    @Column(name = "tag", nullable = false)
-    private String tag;
-
-    @Lob
-    @Column(name = "before_value", nullable = false)
-    private String before;
-
-    @Lob
-    @Column(name = "after_value", nullable = false)
-    private String after;
-
-    @Column(name = "added", nullable = false)
-    private Timestamp added;
+    @Column(name = "authority", nullable = false)
+    private String authority;
 
     @ManyToOne
     @JoinColumn(name="fk_email", nullable = false)
     private UserAccount userAccount;
+
+    public Authority() {
+        // needed for hibernate
+    }
+
+    public Authority(String authority, UserAccount userAccount) {
+        this.authority = authority;
+        this.userAccount = userAccount;
+    }
 }

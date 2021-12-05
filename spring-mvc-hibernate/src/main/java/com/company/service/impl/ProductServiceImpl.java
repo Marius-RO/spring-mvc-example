@@ -3,6 +3,7 @@ package com.company.service.impl;
 import com.company.dto.ProductDto;
 import com.company.model.Product;
 import com.company.model.UserActivity;
+import com.company.repository.AccountRepository;
 import com.company.repository.ProductRepository;
 import com.company.service.ProductService;
 import com.company.service.impl.util.AbstractService;
@@ -22,6 +23,7 @@ import java.util.List;
 public class ProductServiceImpl extends AbstractService implements ProductService {
 
     private final ProductRepository productRepository;
+    private final AccountRepository accountRepository;
 
     private interface SortingOptions {
         int BY_PRICE_ASCENDING = 0;
@@ -31,9 +33,11 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
     }
 
     @Autowired
-    public ProductServiceImpl(WebApplicationContext webApplicationContext, ProductRepository productRepository) {
+    public ProductServiceImpl(WebApplicationContext webApplicationContext, ProductRepository productRepository,
+                              AccountRepository accountRepository) {
         super(webApplicationContext);
         this.productRepository = productRepository;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -113,7 +117,7 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
         userActivity.setAdded(webApplicationContext.getBean(Timestamp.class));
         userActivity.setBefore(Product.toJson(null));
         userActivity.setAfter(Product.toJson(product));
-        userActivity.setFkUserEmail(userEmail);
+        userActivity.setUserAccount(accountRepository.getUser(userEmail));
 
         return productRepository.insertProductAndGetId(product, userActivity, getCategoriesIds(productDto.getCategoriesIds()));
     }
@@ -128,7 +132,7 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
         userActivity.setAdded(webApplicationContext.getBean(Timestamp.class));
         userActivity.setBefore(Product.toJson(getProductById(productId)));
         userActivity.setAfter(Product.toJson(afterProduct));
-        userActivity.setFkUserEmail(userEmail);
+        userActivity.setUserAccount(accountRepository.getUser(userEmail));
 
         productRepository.updateProduct(afterProduct, userActivity, getCategoriesIds(productDto.getCategoriesIds()));
     }
@@ -141,7 +145,7 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
         userActivity.setAdded(webApplicationContext.getBean(Timestamp.class));
         userActivity.setBefore(Product.toJson(getProductById(productId)));
         userActivity.setAfter(Product.toJson(null));
-        userActivity.setFkUserEmail(userEmail);
+        userActivity.setUserAccount(accountRepository.getUser(userEmail));
 
         productRepository.deleteProduct(productId, userActivity);
     }

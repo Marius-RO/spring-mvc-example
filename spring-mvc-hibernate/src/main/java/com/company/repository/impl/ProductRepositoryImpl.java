@@ -296,7 +296,8 @@ public class ProductRepositoryImpl extends AbstractRepository implements Product
     }
 
     private Object[] getUserActivityArgs(UserActivity userActivity){
-        return new Object[]{userActivity.getTag(), userActivity.getBefore(), userActivity.getAfter(), userActivity.getAdded(), userActivity.getFkUserEmail()};
+        return new Object[]{userActivity.getTag(), userActivity.getBefore(), userActivity.getAfter(),
+                userActivity.getAdded(), userActivity.getUserAccount().getEmail()};
     }
 
     private List<Object[]> getCategoriesArgs(HashSet<Integer> categoriesIds, int productId){

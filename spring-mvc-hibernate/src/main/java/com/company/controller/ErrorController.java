@@ -1,6 +1,7 @@
 package com.company.controller;
 
 import com.company.controller.util.AbstractController;
+import com.company.util.IncorrectPasswordException;
 import com.mysql.cj.exceptions.CJCommunicationsException;
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ public class ErrorController extends AbstractController {
         String ERROR_MAX_UPLOAD = "error-max-upload";
         String ERROR_ACCESS_DENIED = "error-access-denied";
         String ERROR_DB_CONNECTION = "error-db-connection";
+        String ERROR_INCORRECT_PASSWORD = "error-incorrect-password";
     }
 
     public interface PathHandler {
@@ -35,6 +37,9 @@ public class ErrorController extends AbstractController {
 
         String ERROR_ACCESS_DENIED_URL = "/access-denied";
         String FULL_ERROR_ACCESS_DENIED_URL = BASE_URL + ERROR_ACCESS_DENIED_URL;
+
+        String ERROR_INCORRECT_PASSWORD_URL = "/incorrect-password";
+        String FULL_ERROR_INCORRECT_PASSWORD_URL = BASE_URL + ERROR_INCORRECT_PASSWORD_URL;
     }
 
     public interface Security {
@@ -45,6 +50,10 @@ public class ErrorController extends AbstractController {
 
         String[] PERMIT_ONLY_EMPLOYEE_ADMIN = {
                 PathHandler.FULL_ERROR_MAX_UPLOAD_URL
+        };
+
+        String[] PERMIT_ONLY_CUSTOMER_EMPLOYEE_ADMIN = {
+                PathHandler.FULL_ERROR_INCORRECT_PASSWORD_URL
         };
     }
 
@@ -73,6 +82,10 @@ public class ErrorController extends AbstractController {
         return ViewHandler.ERROR_DB_CONNECTION;
     }
 
+    @ExceptionHandler(value = IncorrectPasswordException.class)
+    public String handleIncorrectPassword(){
+        return ViewHandler.ERROR_INCORRECT_PASSWORD;
+    }
 
     @InitBinder
     public void initBinder(WebDataBinder webDataBinder){
