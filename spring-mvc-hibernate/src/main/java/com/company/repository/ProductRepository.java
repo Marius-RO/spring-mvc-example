@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ProductRepository {
     Product getProduct(int productId);
+    Product getProductWithCategories(int productId);
     int getProductStock(int productId);
     float getProductPrice(int productId);
     List<Product> getAllProducts();

@@ -1,6 +1,7 @@
 package com.company.config;
 
 import com.company.controller.*;
+import com.company.util.HibernateUserDetailsManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -10,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,18 +24,18 @@ public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
         String ROLE_EMPLOYEE = "ROLE_EMPLOYEE";
     }
 
-    private final DataSource dataSource;
+    private final HibernateUserDetailsManager hibernateUserDetailsManager;
 
     @Autowired
-    public WebAppSecurityConfig(DataSource dataSource) {
+    public WebAppSecurityConfig(HibernateUserDetailsManager hibernateUserDetailsManager) {
         super();
-        this.dataSource = dataSource;
+        this.hibernateUserDetailsManager = hibernateUserDetailsManager;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .jdbcAuthentication().dataSource(dataSource)
+                .userDetailsService(hibernateUserDetailsManager)
                 .passwordEncoder(getPasswordEncoder());
     }
 
@@ -89,7 +89,8 @@ public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
         // this is covered by '.authorizeRequests().anyRequest().authenticated()'
         return extractPaths(
                 AccountController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE_ADMIN,
-                OrderController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE_ADMIN
+                OrderController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE_ADMIN,
+                ErrorController.Security.PERMIT_ONLY_CUSTOMER_EMPLOYEE_ADMIN
         );
     }
 

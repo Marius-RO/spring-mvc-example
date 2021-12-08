@@ -1,16 +1,14 @@
 package com.company.config;
 
-import com.company.repository.impl.AccountRepositoryImpl;
 import com.company.util.GlobalCategoriesInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
@@ -25,6 +23,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.Properties;
 
 @Configuration
 @EnableWebMvc
@@ -67,21 +66,6 @@ public class WebAppMvcConfig implements WebMvcConfigurer {
         return driverManagerDataSource;
     }
 
-    @Bean(name = "jdbcTemplate")
-    public JdbcTemplate getJdbcTemplate(){
-        JdbcTemplate jdbcTemplate = new JdbcTemplate();
-        jdbcTemplate.setDataSource(getDataSource());
-        return jdbcTemplate;
-    }
-
-    @Bean(name = "jdbcUserDetailsManager")
-    public JdbcUserDetailsManager getJdbcUserDetailsManager(){
-        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(getDataSource());
-        jdbcUserDetailsManager.setCreateUserSql(AccountRepositoryImpl.DEF_CREATE_USER_SQL);
-        return jdbcUserDetailsManager;
-    }
-
-
     @Bean(name = "messageSource")
     public MessageSource getValidationMessageSource(){
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -122,6 +106,24 @@ public class WebAppMvcConfig implements WebMvcConfigurer {
 
     @Bean(name = "transactionManager")
     public PlatformTransactionManager getTransactionManager() {
-        return new DataSourceTransactionManager(getDataSource());
+        return new HibernateTransactionManager(Objects.requireNonNull(sessionFactory().getObject()));
+    }
+
+    @Bean
+    public LocalSessionFactoryBean sessionFactory() {
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        sessionFactory.setDataSource(getDataSource());
+        sessionFactory.setPackagesToScan("com.company.model");
+        sessionFactory.setHibernateProperties(hibernateProperties());
+        return sessionFactory;
+    }
+
+    private Properties hibernateProperties() {
+        Properties properties = new Properties();
+        properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
+        properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
+        properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
+        properties.put("hibernate.format_sql", environment.getRequiredProperty("hibernate.format_sql"));
+        return properties;
     }
 }

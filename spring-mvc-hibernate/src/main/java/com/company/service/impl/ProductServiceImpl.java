@@ -3,6 +3,7 @@ package com.company.service.impl;
 import com.company.dto.ProductDto;
 import com.company.model.Product;
 import com.company.model.UserActivity;
+import com.company.repository.AccountRepository;
 import com.company.repository.ProductRepository;
 import com.company.service.ProductService;
 import com.company.service.impl.util.AbstractService;
@@ -22,6 +23,7 @@ import java.util.List;
 public class ProductServiceImpl extends AbstractService implements ProductService {
 
     private final ProductRepository productRepository;
+    private final AccountRepository accountRepository;
 
     private interface SortingOptions {
         int BY_PRICE_ASCENDING = 0;
@@ -31,9 +33,11 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
     }
 
     @Autowired
-    public ProductServiceImpl(WebApplicationContext webApplicationContext, ProductRepository productRepository) {
+    public ProductServiceImpl(WebApplicationContext webApplicationContext, ProductRepository productRepository,
+                              AccountRepository accountRepository) {
         super(webApplicationContext);
         this.productRepository = productRepository;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -44,6 +48,11 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
     @Override
     public Product getProductById(int productId) {
         return productRepository.getProduct(productId);
+    }
+
+    @Override
+    public Product getProductByIdWithCategories(int productId) {
+        return productRepository.getProductWithCategories(productId);
     }
 
     @Override
@@ -113,22 +122,28 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
         userActivity.setAdded(webApplicationContext.getBean(Timestamp.class));
         userActivity.setBefore(Product.toJson(null));
         userActivity.setAfter(Product.toJson(product));
-        userActivity.setFkUserEmail(userEmail);
+        userActivity.setUserAccount(accountRepository.getUser(userEmail));
 
         return productRepository.insertProductAndGetId(product, userActivity, getCategoriesIds(productDto.getCategoriesIds()));
     }
 
     @Override
     public void updateProductById(ProductDto productDto, int productId, String userEmail) {
+        Product oldProduct = getProductByIdWithCategories(productId);
+        if(oldProduct == null){
+            return;
+        }
+
         Product afterProduct = getBasicConversion(productDto, true);
-        afterProduct.setId(productId);
+        afterProduct.setId(oldProduct.getId());
+        afterProduct.setAdded(oldProduct.getAdded()); // be sure that 'added value is the same
 
         UserActivity userActivity = webApplicationContext.getBean(UserActivity.class);
         userActivity.setTag(UserActivity.Tags.UPDATE_PRODUCT);
         userActivity.setAdded(webApplicationContext.getBean(Timestamp.class));
-        userActivity.setBefore(Product.toJson(getProductById(productId)));
+        userActivity.setBefore(Product.toJson(oldProduct));
         userActivity.setAfter(Product.toJson(afterProduct));
-        userActivity.setFkUserEmail(userEmail);
+        userActivity.setUserAccount(accountRepository.getUser(userEmail));
 
         productRepository.updateProduct(afterProduct, userActivity, getCategoriesIds(productDto.getCategoriesIds()));
     }
@@ -139,9 +154,9 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
         UserActivity userActivity = webApplicationContext.getBean(UserActivity.class);
         userActivity.setTag(UserActivity.Tags.DELETE_PRODUCT);
         userActivity.setAdded(webApplicationContext.getBean(Timestamp.class));
-        userActivity.setBefore(Product.toJson(getProductById(productId)));
+        userActivity.setBefore(Product.toJson(getProductByIdWithCategories(productId)));
         userActivity.setAfter(Product.toJson(null));
-        userActivity.setFkUserEmail(userEmail);
+        userActivity.setUserAccount(accountRepository.getUser(userEmail));
 
         productRepository.deleteProduct(productId, userActivity);
     }

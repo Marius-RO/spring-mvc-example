@@ -1,41 +1,45 @@
 package com.company.repository.impl;
 
+import com.company.model.Authority;
 import com.company.model.UserAccount;
 import com.company.repository.AccountRepository;
 import com.company.repository.impl.util.AbstractRepository;
-import com.company.repository.mappers.user.UserRowMapper;
+import com.company.util.IncorrectPasswordException;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.Nullable;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class AccountRepositoryImpl extends AbstractRepository implements AccountRepository {
 
-    public static final String DEF_CREATE_USER_SQL = "INSERT INTO users (username, password, enabled, added) VALUES (?, ?, ?, ?)";
-    private static final String DEF_CREATE_USER_ROLE_SQL = "INSERT INTO authorities (username, authority) VALUES (?, ?)";
-    private static final String DEF_EXTRACT_USER_SQL = "SELECT username, last_name, first_name, added, full_address, phone FROM users WHERE username = ?";
-    private static final String DEF_UPDATE_USER_SQL = "UPDATE users " +
-                                                      "SET first_name = ?, last_name = ?, full_address = ?, phone = ? " +
-                                                      "WHERE username = ?";
+    private static final String DEF_UPDATE_USER_PROFILE_HQL =
+            "UPDATE UserAccount u " +
+            "SET u.firstName = ?1, u.lastName = ?2, u.address.fullAddress = ?3, u.address.phone = ?4 " +
+            "WHERE u.email = ?5";
 
-    private final JdbcUserDetailsManager jdbcUserDetailsManager;
+    private static final String DEF_UPDATE_USER_PASSWORD_HQL =
+            "UPDATE UserAccount u " +
+            "SET u.password = ?1" +
+            "WHERE u.email = ?2";
+
 
     @Autowired
-    public AccountRepositoryImpl(WebApplicationContext webApplicationContext, JdbcTemplate jdbcTemplate,
-                                 JdbcUserDetailsManager jdbcUserDetailsManager) {
-        super(webApplicationContext, jdbcTemplate);
-        this.jdbcUserDetailsManager = jdbcUserDetailsManager;
+    public AccountRepositoryImpl(WebApplicationContext webApplicationContext, LocalSessionFactoryBean sessionFactory) {
+        super(webApplicationContext, sessionFactory);
     }
 
     @Override
@@ -44,78 +48,86 @@ public class AccountRepositoryImpl extends AbstractRepository implements Account
     }
 
     @Override
-    @Transactional
     public void insertUser(UserAccount userAccount, String... roles) {
+        super.executeInsertOperation(session -> executeInsertUser(session, userAccount, roles));
+    }
 
-        // add user
-        jdbcTemplate.update(DEF_CREATE_USER_SQL, ps -> {
-            ps.setString(1, userAccount.getEmail());
-            ps.setString(2, userAccount.getPassword());
-            ps.setBoolean(3, userAccount.isEnabled());
-            ps.setTimestamp(4, userAccount.getAdded());
-        });
+    private void executeInsertUser(Session session, UserAccount userAccount, String... roles){
+        List<Authority> authorityList = createAuthorities(userAccount, roles);
 
-        // add roles
-        final String username = userAccount.getEmail();
-        jdbcTemplate.batchUpdate(DEF_CREATE_USER_ROLE_SQL, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, roles[i]);
-            }
-            @Override
-            public int getBatchSize() {
-                return roles.length;
-            }
-        });
+        session.save(userAccount);
+        for(Authority auth : authorityList){
+            session.save(auth);
+        }
+    }
+
+    private List<Authority> createAuthorities(UserAccount userAccount, String... roles){
+        return Arrays.stream(roles)
+                .map(role -> new Authority(role, userAccount))
+                .collect(Collectors.toList());
     }
 
     @Override
     public boolean userExists(String email) {
-        try{
-            jdbcUserDetailsManager.loadUserByUsername(email);
-            return true;
-        } catch (UsernameNotFoundException ex){
-            return false;
-        }
+        return getUser(email) != null;
     }
 
     @Nullable
     @Override
     public UserAccount getUser(String email) {
-        try{
-            return jdbcTemplate.queryForObject(DEF_EXTRACT_USER_SQL, new Object[]{email}, webApplicationContext.getBean(UserRowMapper.class));
-        } catch (DataAccessException ex){
-            return null;
-        }
+        return super.executeFetchOperation(session -> session.get(UserAccount.class, email));
     }
 
     @Override
     public void updateUser(UserAccount userAccount) {
-        Object[] args = {
-                userAccount.getFirstName(),
-                userAccount.getLastName(),
-                userAccount.getAddress() == null ? "" : userAccount.getAddress().getFullAddress(),
-                userAccount.getAddress() == null ? "" : userAccount.getAddress().getPhone(),
-                userAccount.getEmail()
-        };
+        super.executeUpdateOperation(session -> executeUserUpdate(session, userAccount));
+    }
 
-        jdbcTemplate.update(DEF_UPDATE_USER_SQL, args);
+    private void executeUserUpdate(Session session, UserAccount userAccount){
+        session.createQuery(DEF_UPDATE_USER_PROFILE_HQL)
+                .setParameter(1, userAccount.getFirstName())
+                .setParameter(2, userAccount.getLastName())
+                .setParameter(3, userAccount.getAddress().getFullAddress())
+                .setParameter(4, userAccount.getAddress().getPhone())
+                .setParameter(5, userAccount.getEmail())
+                .executeUpdate();
     }
 
     @Override
     public boolean tryToUpdatePassword(String oldPassword, String newPassword) {
-        try {
-            jdbcUserDetailsManager.changePassword(oldPassword, newPassword);
-            return true;
+        Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
+        if (currentUser == null) {
+            throw new AccessDeniedException("User is not logged in");
         }
-        catch (AuthenticationException ex){
-            return false;
+
+        UserAccount userAccount = getUser(currentUser.getName());
+        if(userAccount == null){
+            throw new UsernameNotFoundException("User does not exists");
         }
+
+        PasswordEncoder passwordEncoder = webApplicationContext.getBean(PasswordEncoder.class);
+        if(!passwordEncoder.matches(oldPassword, userAccount.getPassword())){
+            throw new IncorrectPasswordException("The old password is not correct");
+        }
+
+        super.executeUpdateOperation(session -> updatePassword(session, passwordEncoder, newPassword , userAccount));
+        return true;
+    }
+
+    private void updatePassword(Session session, PasswordEncoder passwordEncoder, String newPassword, UserAccount userAccount){
+        session.createQuery(DEF_UPDATE_USER_PASSWORD_HQL)
+                .setParameter(1, passwordEncoder.encode(newPassword))
+                .setParameter(2, userAccount.getEmail())
+                .executeUpdate();
     }
 
     @Override
     public void deleteUser(String email) {
-        jdbcUserDetailsManager.deleteUser(email);
+        UserAccount userAccount = getUser(email);
+        if(userAccount == null){
+            return;
+        }
+
+        super.executeDeleteOperation(session -> session.remove(userAccount));
     }
 }
