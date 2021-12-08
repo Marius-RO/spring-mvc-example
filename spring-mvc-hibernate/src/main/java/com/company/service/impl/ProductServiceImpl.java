@@ -51,6 +51,11 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
     }
 
     @Override
+    public Product getProductByIdWithCategories(int productId) {
+        return productRepository.getProductWithCategories(productId);
+    }
+
+    @Override
     public int getProductStock(int productId) {
         return productRepository.getProductStock(productId);
     }
@@ -124,13 +129,19 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
 
     @Override
     public void updateProductById(ProductDto productDto, int productId, String userEmail) {
+        Product oldProduct = getProductByIdWithCategories(productId);
+        if(oldProduct == null){
+            return;
+        }
+
         Product afterProduct = getBasicConversion(productDto, true);
-        afterProduct.setId(productId);
+        afterProduct.setId(oldProduct.getId());
+        afterProduct.setAdded(oldProduct.getAdded()); // be sure that 'added value is the same
 
         UserActivity userActivity = webApplicationContext.getBean(UserActivity.class);
         userActivity.setTag(UserActivity.Tags.UPDATE_PRODUCT);
         userActivity.setAdded(webApplicationContext.getBean(Timestamp.class));
-        userActivity.setBefore(Product.toJson(getProductById(productId)));
+        userActivity.setBefore(Product.toJson(oldProduct));
         userActivity.setAfter(Product.toJson(afterProduct));
         userActivity.setUserAccount(accountRepository.getUser(userEmail));
 
@@ -143,7 +154,7 @@ public class ProductServiceImpl extends AbstractService implements ProductServic
         UserActivity userActivity = webApplicationContext.getBean(UserActivity.class);
         userActivity.setTag(UserActivity.Tags.DELETE_PRODUCT);
         userActivity.setAdded(webApplicationContext.getBean(Timestamp.class));
-        userActivity.setBefore(Product.toJson(getProductById(productId)));
+        userActivity.setBefore(Product.toJson(getProductByIdWithCategories(productId)));
         userActivity.setAfter(Product.toJson(null));
         userActivity.setUserAccount(accountRepository.getUser(userEmail));
 

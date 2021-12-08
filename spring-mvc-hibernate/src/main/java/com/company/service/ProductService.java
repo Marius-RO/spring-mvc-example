@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ProductService {
     Product getProductById(int productId);
+    Product getProductByIdWithCategories(int productId);
     int getProductStock(int productId);
     float getProductPrice(int productId);
     List<Product> getAllProducts();

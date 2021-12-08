@@ -4,6 +4,7 @@ import com.company.util.AbstractCommonControllerServiceRepository;
 import org.hibernate.Session;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Objects;
@@ -29,6 +30,7 @@ public abstract class AbstractRepository extends AbstractCommonControllerService
         this.sessionFactory = sessionFactory;
     }
 
+    @Transactional
     protected <R> R executeFetchOperation(Function<Session, R> function){
         Session session = openNewSession();
         R result = function.apply(session);
@@ -36,14 +38,17 @@ public abstract class AbstractRepository extends AbstractCommonControllerService
         return result;
     }
 
+    @Transactional
     protected void executeInsertOperation(Consumer<Session> consumer){
         executeInsertDeleteUpdateOperations(consumer);
     }
 
+    @Transactional
     protected void executeUpdateOperation(Consumer<Session> consumer){
         executeInsertDeleteUpdateOperations(consumer);
     }
 
+    @Transactional
     protected void executeDeleteOperation(Consumer<Session> consumer){
         executeInsertDeleteUpdateOperations(consumer);
     }

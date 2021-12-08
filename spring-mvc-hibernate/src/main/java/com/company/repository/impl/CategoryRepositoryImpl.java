@@ -3,11 +3,9 @@ package com.company.repository.impl;
 import com.company.model.Category;
 import com.company.repository.CategoryRepository;
 import com.company.repository.impl.util.AbstractRepository;
-import com.company.repository.mappers.category.CategoriesResultSetExtractor;
-import com.company.repository.mappers.category.CategoryRowMapper;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -16,15 +14,11 @@ import java.util.List;
 @Repository
 public class CategoryRepositoryImpl extends AbstractRepository implements CategoryRepository {
 
-    private static final String DEF_EXTRACT_ALL_CATEGORIES_SQL = "SELECT * FROM categories";
-    private static final String DEF_INSERT_CATEGORY_SQL = "INSERT INTO categories (name) VALUES (?)";
-    private static final String DEF_GET_CATEGORY_BY_ID_SQL = "SELECT * FROM categories WHERE id = ?";
-    private static final String DEF_UPDATE_CATEGORY_BY_ID_SQL = "UPDATE categories SET name = ? WHERE id = ?";
-    private static final String DEF_DELETE_CATEGORY_BY_ID_SQL = "DELETE FROM categories WHERE id = ?";
+    private static final String DEF_EXTRACT_ALL_CATEGORIES_HQL = "SELECT c FROM Category c";
 
     @Autowired
-    public CategoryRepositoryImpl(WebApplicationContext webApplicationContext, JdbcTemplate jdbcTemplate) {
-        super(webApplicationContext, jdbcTemplate);
+    public CategoryRepositoryImpl(WebApplicationContext webApplicationContext, LocalSessionFactoryBean sessionFactory) {
+        super(webApplicationContext, sessionFactory);
     }
 
     @Override
@@ -34,35 +28,39 @@ public class CategoryRepositoryImpl extends AbstractRepository implements Catego
 
     @Override
     public List<Category> getAllCategories() {
-        return jdbcTemplate.query(DEF_EXTRACT_ALL_CATEGORIES_SQL, webApplicationContext.getBean(CategoriesResultSetExtractor.class));
+        return super.executeFetchOperation(this::executeGetAllCategories);
+    }
+
+    private List<Category> executeGetAllCategories(Session session) {
+        return session
+                .createQuery(DEF_EXTRACT_ALL_CATEGORIES_HQL, Category.class)
+                .list();
     }
 
     @Override
     public void insertCategory(Category category) {
-        Object[] args = {category.getName()};
-        jdbcTemplate.update(DEF_INSERT_CATEGORY_SQL, args);
+        super.executeInsertOperation(session -> session.save(category));
     }
 
     @Override
     public Category getCategoryById(int categoryId) {
-        try{
-            Object[] args = {categoryId};
-            return jdbcTemplate.queryForObject(DEF_GET_CATEGORY_BY_ID_SQL, args, webApplicationContext.getBean(CategoryRowMapper.class));
-        }
-        catch (DataAccessException ex){
-            return webApplicationContext.getBean(Category.class);
-        }
+        return super.executeFetchOperation(session -> session.get(Category.class, categoryId));
     }
 
     @Override
     public void updateCategory(Category category) {
-        Object[] args = {category.getName(),category.getId()};
-        jdbcTemplate.update(DEF_UPDATE_CATEGORY_BY_ID_SQL, args);
+        super.executeUpdateOperation(session -> session.update(category));
     }
 
     @Override
     public void deleteCategoryById(int categoryId) {
-        Object[] args = {categoryId};
-        jdbcTemplate.update(DEF_DELETE_CATEGORY_BY_ID_SQL, args);
+        super.executeDeleteOperation(session -> executeDeleteCategoryById(session, categoryId));
+    }
+
+    private void executeDeleteCategoryById(Session session, int categoryId){
+        Category category = session.get(Category.class, categoryId);
+        if(category != null){
+            session.remove(category);
+        }
     }
 }
