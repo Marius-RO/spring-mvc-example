@@ -2,7 +2,6 @@ package com.company.repository.impl.util;
 
 import com.company.util.AbstractCommonControllerServiceRepository;
 import org.hibernate.Session;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -13,17 +12,7 @@ import java.util.function.Function;
 
 public abstract class AbstractRepository extends AbstractCommonControllerServiceRepository {
 
-    @Deprecated
-    protected JdbcTemplate jdbcTemplate;
-
-    // TODO: make this variable final
-    private LocalSessionFactoryBean sessionFactory;
-
-    @Deprecated
-    public AbstractRepository(WebApplicationContext webApplicationContext, JdbcTemplate jdbcTemplate) {
-        super(webApplicationContext);
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final LocalSessionFactoryBean sessionFactory;
 
     public AbstractRepository(WebApplicationContext webApplicationContext, LocalSessionFactoryBean sessionFactory) {
         super(webApplicationContext);

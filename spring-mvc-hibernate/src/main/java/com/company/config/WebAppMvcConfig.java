@@ -6,7 +6,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -65,13 +64,6 @@ public class WebAppMvcConfig implements WebMvcConfigurer {
         driverManagerDataSource.setPassword(environment.getProperty("dataSource.password"));
         driverManagerDataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("dataSource.driver")));
         return driverManagerDataSource;
-    }
-
-    @Bean(name = "jdbcTemplate")
-    public JdbcTemplate getJdbcTemplate(){
-        JdbcTemplate jdbcTemplate = new JdbcTemplate();
-        jdbcTemplate.setDataSource(getDataSource());
-        return jdbcTemplate;
     }
 
     @Bean(name = "messageSource")

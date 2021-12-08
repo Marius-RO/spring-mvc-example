@@ -38,8 +38,7 @@ public class AccountRepositoryImpl extends AbstractRepository implements Account
 
 
     @Autowired
-    public AccountRepositoryImpl(WebApplicationContext webApplicationContext, JdbcTemplate jdbcTemplate,
-                                 LocalSessionFactoryBean sessionFactory) {
+    public AccountRepositoryImpl(WebApplicationContext webApplicationContext, LocalSessionFactoryBean sessionFactory) {
         super(webApplicationContext, sessionFactory);
     }
 
@@ -49,7 +48,6 @@ public class AccountRepositoryImpl extends AbstractRepository implements Account
     }
 
     @Override
-    @Transactional
     public void insertUser(UserAccount userAccount, String... roles) {
         super.executeInsertOperation(session -> executeInsertUser(session, userAccount, roles));
     }
